@@ -148,7 +148,7 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>15</pointsize>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <italic>true</italic>
            <bold>true</bold>
@@ -158,7 +158,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>Cyber Nour</string>
+          <string>PARA-ELECTRO</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

@@ -4,7 +4,7 @@ import sys
 from time import sleep
 
 from PyQt5.QtCore import QPropertyAnimation, QRect
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 
@@ -279,6 +279,10 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.buy_frame):
             self.change_widget(Buy())
 
+        elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.debt_frame):
+            self.dept = Debt()
+            self.dept.show()
+
 
 
         return super(Main, self).eventFilter(source, event)
@@ -324,6 +328,10 @@ class Main(QtWidgets.QWidget):
             self.anim.start()
             self.m = 1
 
+    # def debt(self):
+    #     text, ok = QInputDialog.getText(self, 'Money Operations', 'Enter the Amount :')
+    #     if ok:
+    #         print(text)
 
 
 class Home(QtWidgets.QFrame):
@@ -346,6 +354,13 @@ class Buy(QtWidgets.QFrame):
     def __init__(self):
         super(Buy, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/buy.ui'), self)
+
+
+
+class Debt(QtWidgets.QDialog):
+    def __init__(self):
+        super(Debt, self).__init__()
+        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/debt.ui'), self)
 
 
 
