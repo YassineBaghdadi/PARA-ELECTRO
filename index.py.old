@@ -1,0 +1,92 @@
+import os
+import sys
+
+from PyQt5.QtCore import QPropertyAnimation, QRect
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5 import uic, QtWidgets
+
+# main_ui, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "src/ui/main.ui"))
+#
+# class Main(QWidget, main_ui):
+#     def __init__(self):
+#         super(Main, self).__init__()
+#         QWidget.__init__(self)
+#
+#         # self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+#         self.setupUi(self)
+#         self.menu_icon.setPixmap(QPixmap('src/icons/menu.png'))
+#         self.menu_icon.setScaledContents(True)
+
+class Main(QtWidgets.QWidget):
+    def __init__(self):
+        super(Main, self).__init__()
+        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/main.ui'), self)
+        tt = test()
+        self.verticalLayout.addWidget(tt)
+
+        # self.sideBar.setFixedWidth(68)
+        # self.sideBar.setGeometry(QRect(1, 1, 68, self.height()))
+        # self.anim = QPropertyAnimation(self.sideBar, b"geometry")
+        # self.anim.setDuration(200)
+        # self.anim.setStartValue(QRect(1, 1, 1, self.height()))
+        # self.anim.setEndValue(QRect(1, 1, 68, self.height()))
+        # self.anim.start()
+
+        self.menu_icon.setPixmap(QPixmap('src/icons/menu.png'))
+        self.menu_icon.setScaledContents(True)
+
+        self.buy_icon.setPixmap(QPixmap('src/icons/buy.png'))
+        self.buy_icon.setScaledContents(True)
+
+        self.home_icon.setPixmap(QPixmap('src/icons/home.png'))
+        self.home_icon.setScaledContents(True)
+
+        self.return_icon.setPixmap(QPixmap('src/icons/return.png'))
+        self.return_icon.setScaledContents(True)
+
+        self.sell_icon.setPixmap(QPixmap('src/icons/sell.png'))
+        self.sell_icon.setScaledContents(True)
+
+        self.statistics_icon.setPixmap(QPixmap('src/icons/statics.png'))
+        self.statistics_icon.setScaledContents(True)
+
+        self.settings_icon.setPixmap(QPixmap('src/icons/settings.png'))
+        self.settings_icon.setScaledContents(True)
+
+        # self.frame.setStyleSheet('box-shadow: -1px 0px 10px 0px;')
+        # self.menu_icon.mousePressEvent = lambda : self.sideBar.setFixedWidth(212)
+        self.menu_icon.mousePressEvent = self.open_menu
+        self.m = 0
+    def open_menu(self, event):
+
+        if self.m:
+            self.anim = QPropertyAnimation(self.sideBar, b"geometry")
+            self.anim.setDuration(370)
+            self.anim.setStartValue(QRect(1, 1, 212, self.height()))
+            self.anim.setEndValue(QRect(1, 1, 68, self.height()))
+            self.anim.start()
+            self.m = 0
+        else:
+            self.anim = QPropertyAnimation(self.sideBar, b"geometry")
+            self.anim.setDuration(370)
+            self.anim.setStartValue(QRect(1, 1, 68, self.height()))
+            self.anim.setEndValue(QRect(1, 1, 212, self.height()))
+            self.anim.start()
+            self.m = 1
+
+
+
+class test(QtWidgets.QFrame):
+    def __init__(self):
+        super(test, self).__init__()
+        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/test.ui'), self)
+
+
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    main = Main()
+    main.show()
+    sys.exit(app.exec_())
