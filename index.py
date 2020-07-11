@@ -2,11 +2,13 @@ import datetime
 import os
 import sys
 from time import sleep
+import sqlite3
 
-from PyQt5.QtCore import QPropertyAnimation, QRect
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import QPropertyAnimation, QRect, Qt, QStringListModel
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QHeaderView, QMenu, QAction, QCompleter
+from PyQt5.QtGui import QIcon, QPixmap, QIntValidator
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
+
 
 # main_ui, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "src/ui/main.ui"))
 #
@@ -19,6 +21,8 @@ from PyQt5 import uic, QtWidgets, QtCore, QtGui
 #         self.setupUi(self)
 #         self.menu_icon.setPixmap(QPixmap('src/icons/menu.png'))
 #         self.menu_icon.setScaledContents(True)
+
+DB = 'src/db.db'
 
 class Main(QtWidgets.QWidget):
 
@@ -37,7 +41,30 @@ class Main(QtWidgets.QWidget):
         # self.anim.setEndValue(QRect(1, 1, 68, self.height()))
         # self.anim.start()
 
-
+        conn = sqlite3.connect(DB)
+        curs = conn.cursor()
+        curs.execute("""
+            CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            name TEXT, 
+            code TEXT, 
+            categorie TEXT, 
+            qt INTEGER, 
+            price INTEGER);
+        """)
+        curs.execute("""
+            CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            date_time TEXT, 
+            product TEXT, 
+            qt INTEGER, 
+            total_price INTEGER, 
+            operation TEXT, 
+            person TEXT,
+            paid TEXT);
+        """)
+        conn.commit()
+        conn.close()
         self.setWindowIcon(QtGui.QIcon('src/icons/logo.png'))
         self.setGeometry(QRect(200, 200, 855, 600))
 
@@ -160,6 +187,8 @@ class Main(QtWidgets.QWidget):
         self.logo.setPixmap(QPixmap('src/icons/logo.png'))
         self.logo.setScaledContents(True)
 
+
+
         self.menu_icon.setPixmap(QPixmap('src/icons/menu.png'))
         self.menu_icon.setScaledContents(True)
 
@@ -206,6 +235,8 @@ class Main(QtWidgets.QWidget):
         self.statistics_frame.installEventFilter(self)
         self.logout_frame.installEventFilter(self)
         self.settings_frame.installEventFilter(self)
+
+
 
     def refresh(self):
         self.title_label.setText(f"PARA-ELECTRO : {' - '.join(str(datetime.datetime.today().date()).split('-')[::-1])}")
@@ -275,7 +306,6 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.sell_frame):
             self.change_widget(Sell())
 
-
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.buy_frame):
             self.change_widget(Buy())
 
@@ -338,8 +368,69 @@ class Home(QtWidgets.QFrame):
     def __init__(self):
         super(Home, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/home.ui'), self)
+        self.search_btn.setPixmap(QPixmap('src/icons/search.png'))
+        self.search_btn.setScaledContents(True)
+        self.search_btn.installEventFilter(self)
+        self.search_txt.installEventFilter(self)
+        self.search_txt.setFixedWidth(0)
+        self.history_table.itemSelectionChanged.connect(self.table_select_event)
+        self.table_header = ['id', 'Date/Time', 'Product', 'Quantity', 'Total Price', 'Operation', 'Person']
+        self.history_table.setColumnCount(len(self.table_header))
+        self.history_table.setHorizontalHeaderLabels(self.table_header)
+        self.history_table.resizeColumnsToContents()
+        # self.history_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+        self.history_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.return_btn.clicked.connect(self.return_goods)
+
+    def refresh(self, key=None):
+        # conn = sqlite3.connect(DB)
+        # curs = conn.cursor()
+        # current_month_selld_operations = int(curs.execute('SELECT COUNT(id) FROM history where operation like "sell"').fetchone())
+        # # self.sells_operations_counter.setText(f"""
+        # #     {}
+        # # """)
+        # sql = ''
+        # if key:
+        #     sql = ''
+        # else:
+        #     pass
+        #
+        # self.history_table.clear()
+        # self.history_table.setHorizontalHeaderLabels(self.table_header)
+        pass
 
 
+    def return_goods(self):
+        # self.refresh()
+        pass
+
+
+    def table_select_event(self):
+        items = self.history_table.selectedItems()
+        if items:
+            print([str(i.text()) for i in items])
+            self.return_btn.setEnabled(True)
+        else:
+            self.return_btn.setEnabled(False)
+
+    def eventFilter(self, source, event):
+        if source is self.search_btn:
+
+            if event.type() == QtCore.QEvent.MouseButtonPress:
+                # self.search_txt.setText('')
+                self.search_txt.setFixedWidth(311)
+            elif event.type() == QtCore.QEvent.HoverEnter:
+                self.search_btn.setStyleSheet('border:1px solid grey;')
+            elif event.type() == QtCore.QEvent.HoverLeave :
+                self.search_btn.setStyleSheet('border:0px solid grey;')
+
+        return super(Home, self).eventFilter(source, event)
 
 
 class Sell(QtWidgets.QFrame):
@@ -354,6 +445,85 @@ class Buy(QtWidgets.QFrame):
     def __init__(self):
         super(Buy, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/buy.ui'), self)
+        self.refresh()
+
+        self.product_name.installEventFilter(self)
+
+        self.completer = QCompleter()
+        self.model = QStringListModel()
+        self.completer.setModel(self.model)
+        # # self.product_name.textChanged.connect(self.product_txt_changing)
+        # self.product_txt_changing()
+        self.seller.setCompleter(self.completer)
+        self.product_name.currentTextChanged.connect(self.product_choosen)
+        self.qt.textChanged.connect(self.qt_changing)
+
+
+
+        self.qt.setValidator(QIntValidator())
+        # conn.close()
+        self.qt_value = 0
+
+    def qt_changing(self):
+        if self.product_name.currentText() == '':
+            self.rest.setText('<font color="red">ERR :</font> Select product first')
+            return
+
+        try:
+            # old = int(self.rest.text().split('*')[0])
+            self.rest.setText(f'{int(self.qt.text())+ self.qt_value}"in the stock')
+        except:
+            self.rest.setText('<font color="red">ERR :</font> Fill the Quantity')
+
+    def product_choosen(self):
+        conn = sqlite3.connect(DB)
+        curs = conn.cursor()
+        code = str(self.product_name.currentText()).split("-")[0].replace(" ", "")
+        print(code)
+        try:
+            dt = curs.execute(f'select categorie, qt, price from products where code like "{code}"').fetchone()
+            self.categorie.setText(dt[0])
+            self.categorie.setEnabled(False)
+            self.qt_value = int(dt[1])
+            self.rest.setText(f'{self.qt_value}"in the stock')
+
+            self.price.setText(str(dt[2]))
+
+        except:
+            self.categorie.setText('')
+            self.categorie.setEnabled(True)
+            self.rest.setText('0 in the stock')
+            self.price.setText('')
+
+
+    def refresh(self):
+
+        conn = sqlite3.connect(DB)
+        self.curs = conn.cursor()
+        # ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products where name like "%{self.product_name.text()}%" or code like "%{self.product_name.text()}%"').fetchall()])
+        ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products order by name asc').fetchall()])
+        ll.insert(0, '')
+        # ll = ['yassine', 'baghdadi', 'guercif']
+        try:
+            self.model.setStringList(self.curs.execute('select person from history where operation like "sell" order by asc').fetchall())
+        except:pass
+        self.product_name.clear()
+        self.product_name.addItems(ll)
+        conn.close()
+    def eventFilter(self, source, event) :
+        # if source is self.product_name or source is self.categorie:
+        #     if event.type() == QtCore.QEvent.FocusIn:
+        #         print(f'connecting to {DB}')
+        #         self.conn = sqlite3.connect(DB)
+        #         self.curs = self.conn.cursor()
+        #     elif event.type() == QtCore.QEvent.FocusOut:
+        #         print(f'deconnecting to {DB}')
+        #         self.conn.close()
+
+        return super(Buy, self).eventFilter(source, event)
+
+
+
 
 
 

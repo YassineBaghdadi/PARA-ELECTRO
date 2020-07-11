@@ -64,6 +64,25 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
+       <widget class="QLineEdit" name="product_name">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>24</y>
+          <width>262</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Product Name/Code*</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
        <widget class="QLineEdit" name="qt">
         <property name="geometry">
          <rect>
@@ -101,12 +120,12 @@
          <rect>
           <x>590</x>
           <y>82</y>
-          <width>240</width>
+          <width>110</width>
           <height>30</height>
          </rect>
         </property>
         <property name="text">
-         <string/>
+         <string>amount on the stock</string>
         </property>
        </widget>
        <widget class="QLineEdit" name="price">
@@ -177,58 +196,6 @@
         </property>
         <property name="clearButtonEnabled">
          <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="product_name">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>24</y>
-          <width>262</width>
-          <height>34</height>
-         </rect>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="placeholderText">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>   yassine</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>baghdadi</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Guercif</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>63</x>
-          <y>60</y>
-          <width>220</width>
-          <height>10</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>*Product Code - Product Name</string>
         </property>
        </widget>
       </widget>

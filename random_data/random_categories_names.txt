@@ -1,0 +1,742 @@
+
+Active Filters
+Amplifier IC Development Boards and Kits
+Analog Dividers and Multipliers
+CATV Amplifiers
+Amplifiers and Comparators 
+Comparators
+Instrumentation Amplifiers
+Op Amps
+RF Amplifiers
+Special Purpose Amplifiers
+GPS 
+GPS Amplifiers
+Multimedia Amplifier 
+Audio Amplifiers
+Video Amplifiers
+Others 
+Amplifiers Misc
+Attenuators 
+Fixed/Variable Attenuators 
+Digital Attenuators
+Fiber Optic Attenuators
+Fixed Attenuators
+Voltage Variable Attenuators
+Audio Components 
+Audio Indicators and Alerts
+Microphones
+Speakers
+Batteries 
+Batteries and Accessories
+Battery Contacts, Clips and Holders
+Capacitors 
+Accessories 
+Capacitor Accessories
+Capacitor Networks and Arrays 
+Capacitor Networks and Arrays
+Capacitor RC Network
+Fixed Capacitors 
+Capacitor Aluminum
+Capacitor Aluminum Polymer
+Capacitor Electric Double Layer- Supercaps
+Capacitor Feed Through
+Capacitor Tantalum Polymer
+Capacitor Ceramic Multilayer
+Capacitor Ceramic Single Layer
+Capacitor Film
+Capacitor Mica
+Capacitor Niobium
+Capacitor Silicon
+Capacitor Tantalum Solid
+Capacitor Tantalum Wet
+Capacitor Other
+Variable Capacitors 
+Capacitor Trimmer
+Circuit Protection 
+Electrical Distribution and Protection 
+Busbars
+Circuit Protection Misc
+Gas Discharge Tubes - GDTs
+Thermal Cutoffs
+Transient Blocking Units
+Varistors
+ESD Protection Diodes 
+ESD Suppressors
+Transient Voltage Suppressors (TVS)
+Overcurrent Protection 
+Circuit Breaker Accessories
+Circuit Breakers
+Fuse Accessories
+Fuses
+PTC Resettable Fuses
+Surge protection Modules 
+Surge Arrestors
+Surge Suppressors
+Thyristors 
+Thyristor Surge Protection Devices
+Clock and Timing 
+Clock and Data Recovery
+Delay Lines
+Direct Digital Synthesizers - DDS
+Real Time Clocks
+Timers
+Zero Delay Buffers (ZDB)
+Clock Buffer and Management 
+Clock Buffers and Drivers
+Clock Distribution 
+Clock Generators and Synthesizers
+Phase-Locked Loops - PLLs
+Evaluation, Development Boards and Kits 
+Clock and Timing Development Boards and Kits
+Others 
+Logic and Timing Misc
+Communication 
+Analog Handsets 
+Caller ID
+SLIC
+Speech Network
+Telephone Circuits
+ATM Chips 
+ATM Switch Chip
+ATM UNIs
+CODEC ICs 
+Audio CODECs
+CODECs
+Video CODECs
+Video Encoders/Decoders
+Communication ICs 
+ADPCM Voice Compression
+ECHO Cancellers
+Switch Fabric
+DSL 
+Network Routers
+Modems 
+Modem Chip
+Modem Modules
+Network Controller and Processor Ics 
+Controller Area Network
+Framer
+ISDN Controllers
+Mapper
+Network Processors
+Others 
+Communication Misc
+Protocols and Networks 
+ISDN ST U Interface
+PHY
+Wireless Modems 
+Cellular Modules
+Computer Products 
+Applied Computing and Embedded Systems 
+Box PCs
+Carrier Cards and Carrier Boards
+Computer Backplanes
+Computer Chassis
+Digital Signage Players
+Motherboards
+Panel PCs
+Riser Cards
+System on Modules - SOM
+Computer Networks 
+Hubs and Switches
+Network Gateways
+Network Interface Cards
+Computer Peripherals 
+Cameras
+Joysticks
+Keyboard and Mouse Combos
+Keypads and Keyboards
+Memory Card Readers
+Computer Mouse
+Printers
+Scanners
+Data Storage 
+Hard Disk Drives - HDDS
+Optical Drives
+Solid State Drives - SSDS
+USB Flash Drives
+Desktops and Workstations 
+All-in-One PCs
+Desktop PCs
+Stick PCs
+Mobile Computing 
+Handheld PCs
+Laptops and Notebooks
+Tablet PCs
+Servers 
+Network Servers
+Serial Servers
+Software 
+Software Services
+Connectors 
+Connector Accessories 
+Backshells
+Connector Accessories
+Connector Other 
+Connector Contact
+Connector Fiber Optics
+Connector Memory Card
+Connector Photovoltaic
+Power Entry Modules
+Connector RF
+Connector Socket
+Connector Terminal Blocks
+Connector Terminals
+Connector Other
+I/O Connectors 
+Connector Audio and Video
+Connector Circular
+Connector D-Subminiature
+Connector Power
+Connector Telephone and Telecom
+Connector USB
+Connector Interface
+Connector Rectangular
+Connector SCSI
+Wire and PCB Connector 
+Connector Backplane
+Connector Card Edge
+Connector Discrete Wire Housing
+Connector FFC-FPC
+Connector Headers and PCB Receptacles
+Connector Jumpers and Shunts
+Controllers 
+Ethernet 
+Ethernet Controllers
+Peripheral Controllers 
+Interrupt Controllers
+I/O Controllers
+SCSI Controllers
+Peripherals Misc
+Data Acquisition 
+Analog Front End - AFE
+Digital Potentiometers
+Sample and Hold
+Synchro and Resolver to Digital Converters
+V2F and F2V
+Data Converters 
+Analog to Digital Converters - ADCs
+DAC
+Data Acquisition Systems
+Evaluation, Development Boards and Kits 
+Data Conversion Development Boards and Kits
+Others 
+Data Conversion Misc
+Development Systems 
+Evaluation, Development Boards and Kits 
+Robotic Kits
+Programmers 
+In-Circuit Programmers, Emulators and Debuggers
+Universal Programmers
+Software 
+Software Development Tools
+Diodes, Transistors and Thyristors 
+Bipolar Transistors 
+Darlington BJT
+Digital BJT
+GP BJT
+RF BJT
+FET Transistors 
+JFETs
+MOSFETs
+RF MOSFETs
+IGBT Transistors 
+IGBT Chip
+IGBT Module
+Others 
+Discrete Misc
+Regulator Diodes 
+Current Regulators
+Zener
+RF Diodes 
+Bridge Rectifiers
+Rectifiers
+PIN
+Varactors
+Thyristors 
+DIACs
+SCR Modules
+SIDACs
+Silicon Controlled Rectifiers - SCRs
+TRIACs
+Thyristors Other
+Displays 
+Display Modules 
+OLED Modules
+STN Graphics Modules
+TFT Modules
+Vacuum Fluorescent Displays - VFDs
+LCD Displays 
+LCD Character Modules
+LCD Monitors
+LCD Touch Screens
+Others 
+Displays Misc
+Drivers and Interfaces 
+Drivers 
+ADSL Drivers and Receivers
+CCFL Inverters
+Display Drivers
+Laser Drivers
+LCD Drivers
+LED Drivers
+Lighting Drivers and Controller ICs
+Mechanical Encoder Driver Interfaces
+Peripheral Drivers
+Plasma Drivers
+Interface 
+Bus Line Transceivers
+Digital Isolator
+GPIO Expanders
+Interface Controllers
+Interface Modules
+Line Interface Units
+LVDS
+SCSI Expanders
+Sensor and Detector Interface
+Signal Buffers and Repeaters
+Smart Card Interface
+Termination Ics
+Touch Screen Controllers
+Universal Asynchronous Receiver Transmitter- UARTs
+USB Interface ICs
+Voice Record and Playback
+Other 
+Specialized Interfaces
+PCI 
+PCI Bridge Chip
+Electromechanical Switches 
+Contact Blocks
+Dimmers
+Switch Accessories
+Switch Detector
+Switch DIP
+Switch Emergency Stop
+Switch Foot
+Switch Indicators
+Switch Key
+Switch KeyLock
+Switch Limit
+Switch Other
+Switch Piezo
+Switch Push Button
+Switch Reed
+Switch Rocker
+Switch Rotary
+Switch Safety Interlock
+Switch Selector
+Switch Slide
+Switch Snap Action
+Switch Tactile
+Switch Thumb-Pushwheel
+Switch Toggle
+Electronic Switches 
+Bus Switches 
+Analog Switch Multiplexers
+Bus Exchange Switches
+Bus Switches
+Universal Bus Exchanger
+Crosspoint Switches 
+Analog Crosspoint
+Digital Crosspoint
+Ethernet 
+Ethernet Switches
+Express Switches 
+PCI Express Switches
+Embedded Controllers and Systems 
+Embedded Systems 
+Single Board Computers - SBCs
+EMI/RFI Suppression 
+EMI/RFI Electronics 
+Board Mount EMI Enclosures
+Common Mode Chokes
+EMI Absorbers
+EMI Filters
+EMI Gaskets
+Ferrite Components 
+Ferrite Accessories
+Ferrite Beads
+Ferrite Cores
+Encoders 
+Capacitive Encoders
+Magnetic Encoders
+Mechanical Encoders
+Optical Encoders
+Fasteners and Hardware 
+Bolts and Screws 
+Bent Bolts
+Carriage Bolts
+Hex Bolts
+Screws
+Fasteners 
+Ball and Spring Plungers
+Hook and Loop Fasteners
+Inserts
+Mechanical Pins
+Nuts
+Retaining and Snap Rings
+Rivets
+Springs
+Studs
+Washers
+Hardware 
+Bearings
+Box, Enclosure and Rack Accessories
+Boxes, Enclosures and Racks
+Bumpers and Leveling Elements
+Casters
+Clamps and Clips
+Control Knobs
+Grommets and Eyelets
+Handles, Locks and Latches
+Hinges
+Magnets
+Mounting Brackets
+PCB Spacers and Supports
+Shock Absorbers
+Standoffs
+Material Handling and Lifting 
+Extrusions
+Hoists, Winches and Lifting Equipment
+Lanyards, Slings and Wire Ropes
+Wire Rope Accessories
+Seals 
+Gaskets
+O-Rings
+Filters 
+BAW Filters
+Ceramic Filters
+Crystal Filters
+Filters Other
+Power Line Filters
+RF Filters
+SAW Filters
+Sinusoidal Output Filters
+Fluid Power Actuators & Valves 
+Actuator 
+Pneumatic and Hydraulic Cylinders
+Rotary Actuators
+Solenoids
+Air Preperation and Treatment 
+Compressed Air Filters
+Fluid Filters and Purifiers 
+Gas Filters and Purifiers
+Process Filters
+Fluid Power Generation and Storage 
+Tanks and Vessels
+Valve 
+Check Valves
+Directional Control Valves
+Valve Accessories
+Valves Other
+Kits and Tools 
+Capacitor Kits
+Component Kits
+Development Kits and Tools
+Inductor Kits
+PC Card Inserters, Extractors and Guides
+PCB Prototyping Boards
+Resistor Kits
+Solderless Breadboards
+LEDs and LED Lighting 
+LED Accessories 
+LED Accessories
+LED Light Pipes
+Optical Lenses
+LED Displays 
+LED Displays Segmented
+LED Displays Dot Matrix
+LED Light Bars, Arrays and Bar Graphs
+LED Indication 
+Infrared Emitters
+LED Panel Mount Indicators
+LEDs
+LED Lighting 
+LED Modules
+Lighting Protection 
+LED Protection Devices
+Lighting Solutions 
+Lamps
+Lighting Fixtures
+Magnetics 
+Inductors and Coils 
+Inductor Leaded
+Inductor Surface Mount
+Wireless Charging Coils
+Power Transformers 
+Audio Transformers
+Current Transformers
+Power Transformers
+Pulse Transformers
+RF Transformers
+Switching Transformers
+Telecom Transformers
+Transformers Other
+Material Handling, Storage and Packaging 
+Bags and Sacks
+Cartons
+Packaging Products Other
+Tags
+Materials, Chemicals and Adhesives 
+Adhesives 
+Curable Adhesives
+Epoxy Adhesives
+Silicone Adhesives
+Threadlockers
+Chemicals 
+Cleaning Agents
+Industrial Inks
+Industrial Lubricants
+Paints and Coatings
+Materials 
+3D Printing Filaments
+Abrasives
+Foams
+Labels
+Tapes
+Other 
+Specialized Materials and Chemicals
+Welding Supplies 
+Fluxes
+Solder Masks
+Soldering Materials
+Mechanical Power Transmission 
+Belts, Gears and Pulleys 
+Belts and Chains
+Gearboxes and Gearheads
+Gears, Pulleys and Sprockets
+Shafts, Rods and Supported Products 
+Bearing Accessories
+Rods and Shafts
+Shaft Collars, Couplings and Locking Devices
+Memory 
+Memory Cards 
+Flash Cards
+Memory Modules
+Memory Controllers 
+Flash Memory Controllers
+Others 
+Memory Misc
+RAM 
+Cache Memory
+DRAM Chip
+EEPROM
+EPROM
+FIFO
+Flash
+FRAM
+MRAM
+Multi-Chip Package Memory
+NVRAM
+PROM
+PSRAM
+SRAM Chip
+Microcontrollers and Processors 
+Authenticators
+Authenticators
+Microcontrollers
+Secure Microcontrollers and TPM
+Evaluation, Development Boards and Kits 
+Embedded System Development Boards and Kits
+Others 
+Processors Misc
+Processor 
+Application Processors and SOCs
+Audio Processors
+Digital Signal Processors - DSPs
+Microprocessors
+Video Processors
+Motors 
+AC Motors
+Brushed DC Motors
+Brushless DC Motors
+Combination Motor Controllers
+Motors Other
+Servo Motors
+Soft Starters
+Stepper Motors
+Multimedia 
+Others 
+Multimedia Converters
+Multimedia Misc
+Optoelectronics 
+Fiber Optics 
+Fiber Management Systems
+Fiber Optic Couplers
+Fiber Optic Switches
+Fiber Optic Transceivers
+Optical Add/Drop Multiplexers
+Specialized Fiber Optic
+Indicators 
+Panel Mount Indicators
+Laser Diodes 
+Laser Diode Modules
+Laser Diodes
+Optical Inspection Equipment 
+Microscopes
+PhotoCouplers 
+IGBT and MOSFET Gate Driver Photocouplers
+Logic Output Photocouplers
+OptoCouplers
+Transistor and Photovoltaic Output PhotoCouplers
+Triac and SCR Output Photocouplers
+Photoelement 
+Photodetectors
+Photodiodes
+Photointerrupters
+Photomultipliers
+Phototransistors
+Oscillators and Crystals 
+Crystals and Resonator 
+Crystals
+Resonators
+Oscillators 
+Controlled Oscillators
+MEMS Oscillators
+Silicon Oscillators
+SMD Crystal Oscillators
+TH Crystal Oscillators
+Oscillators Misc
+Other 
+Custom Parts
+Misc Products
+Unclassified
+Pipe, Tubing, Hose and Accessories 
+Fittings
+Hose Assemblies
+Hose Fittings and Accessories
+Hoses
+Power Management 
+Application Specific 
+Battery Management
+Motion Motor Control
+PMIC Solutions
+Telecom Ringer
+Voltage References
+Wireless Charging
+DC to DC Conversion 
+Charge Pump
+DC to DC Converter and Switching Regulator Chip
+Special Purpose Voltage Regulators
+Drivers 
+Gate and Power Drivers
+Intelligent Power Modules
+Evaluation, Development Boards and Kits 
+Power Management Development Boards and Kits
+Power Controllers 
+AC to DC Switching Converters
+DC to DC Controller
+Hot Swap Controllers
+OR Controllers
+Power Factor Correction - PFC
+Power Over Ethernet - PoE Controllers
+Power Supply Controllers and Monitors
+Power Management Other 
+Feedback Signal Generators
+Specialized Power ICs and Modules
+PWM Controllers 
+Current Mode PWM Controllers
+Regulators and Controllers 
+Linear Regulators
+Low Dropout Controllers
+Signal Conditioning 
+RMS to DC Converters
+Supervisors and Reset ICs 
+Supervisory Circuits
+Switches and Muxes 
+Current Limit Switches
+Power Muxes
+Power Switches
+USB Power Switches
+Power Supplies 
+AC to DC Power Supplies
+Battery Chargers
+DC to AC Inverters
+DC to DC Converter and Switching Regulator Module
+DC to DC Power Supplies
+External Plug-In Adapters
+LED Power Supplies
+Power Distribution Units
+Power Over Ethernet - PoE
+Power Supply Accessories
+Uninterruptible Power Supply Systems - UPS
+Process Control 
+Cooling and Heating Equipment 
+Chillers
+Heaters and Heating Elements
+Flow and Level 
+Flow Controllers and Flow Meters
+Panel Controls and Displays 
+Process Controllers
+Pressure and Vacuum 
+Pressure Gauges
+Programmable Devices 
+Embedded Systems 
+IP Cores
+Evaluation, Development Boards and Kits 
+Programmable Logic Development Boards and Kits
+Others 
+Specialized Programmable Logic
+Programmable Logic Devices 
+ASICs
+Complex Programmable Logic Devices - CPLDs
+Field Programmable Gate Arrays - FPGAs
+Simple Programmable Logic Devices - SPLDs
+Relays 
+I/O Modules
+Power Relays
+Reed Relays
+Relay Accessories
+Relay Sockets
+Relays Other
+Signal Relays
+Solid State Relays - SSRs
+Time Delay Relays
+Resistors 
+Accessories 
+Resistor Accessories
+Fixed Resistors 
+Resistor Fixed Single-Other Mounting
+Resistor Fixed Single-Surface Mount
+Resistor Fixed Single-Through Hole
+Resistor Networks and Arrays
+Variable Resistors 
+Resistor Trimmers, Potentiometers and Rheostats
+RF and Microwave 
+RF Couplers
+Add and Remove DC 
+DC Blocks
+Diodes 
+RF Diodes
+Evaluation, Development Boards and Kits 
+RF/Wireless Development Boards and Kits
+GPS 
+GPS Receivers
+Isolator and Circulator 
+RF Isolator and Circulators
+Other RF 
+Antennas
+Phase Shifters
+RF ICs Misc
+RF Modules Misc
+RF ICs 
+Mod and Demod
+Prescalers
+RF Detector
+RF Duplexers
+RF Front End
+RF Switches
+RF Transceivers
+Tuners
+Up-Down Converter and Mixers
+RF Identification 
+NFC/RFID Reader and Writers
+NFC/RFID Tag and Transponders
+RF Modules 
+802.11 Wireless LAN Modules
+802.15.4 LR-WPAN
+Bluetooth
+Combo Wireless Modules
+RF Combiner and Dividers
+RF Multiplexers
+RF Multipliers
