@@ -5,10 +5,11 @@ from time import sleep
 import sqlite3
 
 from PyQt5.QtCore import QPropertyAnimation, QRect, Qt, QStringListModel
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QHeaderView, QMenu, QAction, QCompleter
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QHeaderView, QMenu, QAction, QCompleter, \
+    QTableWidgetItem
 from PyQt5.QtGui import QIcon, QPixmap, QIntValidator
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
-
+from time import gmtime, strftime
 
 # main_ui, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "src/ui/main.ui"))
 #
@@ -50,7 +51,7 @@ class Main(QtWidgets.QWidget):
             code TEXT, 
             categorie TEXT, 
             qt INTEGER, 
-            price INTEGER);
+            price TEXT);
         """)
         curs.execute("""
             CREATE TABLE IF NOT EXISTS history (
@@ -58,7 +59,7 @@ class Main(QtWidgets.QWidget):
             date_time TEXT, 
             product TEXT, 
             qt INTEGER, 
-            total_price INTEGER, 
+            total_price TEXT, 
             operation TEXT, 
             person TEXT,
             paid TEXT);
@@ -456,24 +457,142 @@ class Buy(QtWidgets.QFrame):
         # self.product_txt_changing()
         self.seller.setCompleter(self.completer)
         self.product_name.currentTextChanged.connect(self.product_choosen)
-        self.qt.textChanged.connect(self.qt_changing)
+        self.qt_.textChanged.connect(self.qt_changing)
 
-
-
-        self.qt.setValidator(QIntValidator())
+        self.qt_.setValidator(QIntValidator())
+        self.price.setValidator(QIntValidator())
         # conn.close()
         self.qt_value = 0
+        self.add.clicked.connect(self.add_row)
+
+        self.to_buy_table.itemSelectionChanged.connect(self.table_select_event)
+        self.table_header = [ 'Product', 'Code', 'Categorie', 'Quantity', 'Seller', 'Price', 'Paid', 'Total']
+        self.to_buy_table.setColumnCount(len(self.table_header))
+        self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
+        self.to_buy_table.resizeColumnsToContents()
+        # self.to_buy_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+        for i in range(len(self.table_header)):
+            self.to_buy_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
+        self.clear.setEnabled(False)
+        self.clear.clicked.connect(self.del_row)
+        self.buy.clicked.connect(self.save_buy)
+
+    def save_buy(self):
+        to_update = []
+        to_add = []
+        conn = sqlite3.connect(DB)
+        curs = conn.cursor()
+        exists_codes = [str(i[0]) for i in curs.execute('select code from products').fetchall()]
+
+        for r in range(self.to_buy_table.rowCount()):
+            if str(self.to_buy_table.item(r, 1).text()) in exists_codes:
+                tmp = []
+                for c in range(self.to_buy_table.columnCount()):
+                    tmp.append(str(self.to_buy_table.item(r, c).text()))
+                to_update.append(tmp)
+            else:
+                tmp = []
+                for c in range(self.to_buy_table.columnCount()):
+                    itm = str(self.to_buy_table.item(r, c).text())
+                    tmp.append(itm)
+                to_add.append(tmp)
+
+
+
+        def add_history(i):
+            curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person) values(
+                                                    "{str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}", 
+                                                    "{i[0]}({i[1]})", 
+                                                    "{i[3]}", 
+                                                    "{int(i[5]) * int(i[3])}", 
+                                                    "Buy",
+                                                    "{i[4]}")''')
+            conn.commit()
+
+        for i in to_add:
+            curs.execute(f'''INSERT INTO products (name, code, categorie, qt, price) values("{i[0]}", "{i[1]}", "{i[2]}", {int(i[3])}, "{i[5]}")''')
+            add_history(i)
+
+        for i in to_update:
+            curs.execute(f'''
+                 UPDATE products SET qt = qt + {int(i[3])} where code like "{i[1]}"
+            ''')
+            add_history(i)
+
+
+        conn.close()
+        print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
+        self.to_buy_table.clear()
+        self.to_buy_table.setColumnCount(len(self.table_header))
+
+
+
+    def table_select_event(self):
+        # row = [str(i.text()) for i in self.to_buy_table.selectedItems()]
+        self.clear.setEnabled(True) if [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()] else self.clear.setEnabled(False)
+        # self.selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
+        # if self.selected_rows:
+        #     self.clear.setText('Delete')
+        #     self.clear.clicked.connect(self.del_row)
+        # else:
+        #     self.clear.setText('clear')
+        #     self.clear.clicked.connect(self.clear_table)
+
+    def del_row(self):
+        selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
+        # [self.to_buy_table.removeRow(self.to_buy_table.indexAt(int(i)).row()) for i in selected_rows]
+        [self.to_buy_table.removeRow(i) for i in selected_rows]
+
+
+
+    def add_row(self):
+        if self.product_name.currentText() == '' or len(self.product_name.currentText().split( ' - ')) < 2:
+            self.err.setText('<font color="red">Invalid Product Name</font>, Hint : code - name...')
+        elif self.categorie_.text() == '':
+            self.err.setText('<font color="red">Invalid Categorie</font>')
+        elif int(self.qt_.text()) <= 0:
+            self.err.setText('<font color="red">Invalid Quantity Value</font>')
+        elif self.seller.text() == '':
+            self.err.setText('<font color="red">Invalid Seller Name</font>, Hint : write - if you don\'t have one')
+        elif int(self.price.text() ) <= 0 :
+            self.err.setText('<font color="red">Invalid Price Value</font>')
+        else:
+            self.err.setText('')
+            # self.to_buy_table.addTableRow( [self.product_name.currentText().split(' - ')[1], self.categorie.text(), self.qt.text, self.seller.text(), self.price.text() , 'Yes' if self.paid.isChecked() else 'No'])
+            row = self.to_buy_table.rowCount()
+            self.to_buy_table.insertRow(0)
+            col = 0
+            for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(),
+                         self.seller.text(), self.price.text(), 'Yes' if self.is_paid.isChecked() else 'No', f'{int(self.qt_.text())*int(self.price.text())} DH']:
+                cell = QTableWidgetItem(str(item))
+                self.to_buy_table.setItem(0, col, cell)
+                col += 1
+
+            self.seller.setText('')
+            self.product_name.setCurrentIndex(0)
 
     def qt_changing(self):
-        if self.product_name.currentText() == '':
-            self.rest.setText('<font color="red">ERR :</font> Select product first')
-            return
+        if self.qt_.text():
+            if self.product_name.currentText() == '':
+                self.rest.setText('<font color="red">ERR :</font> Select product first')
+                return
 
-        try:
-            # old = int(self.rest.text().split('*')[0])
-            self.rest.setText(f'{int(self.qt.text())+ self.qt_value}"in the stock')
-        except:
-            self.rest.setText('<font color="red">ERR :</font> Fill the Quantity')
+            try:
+                # old = int(self.rest.text().split('*')[0])
+
+                self.rest.setText(f'{int(self.qt_.text())+ self.qt_value}"in the stock')
+            except:
+                self.rest.setText('<font color="red">ERR :</font> Fill the Quantity')
+            try:
+                if int(self.qt_.text()) < 1:
+                    self.rest.setText('<font color="red">ERR :</font> Must be > 0')
+                    self.add.setEnabled(False)
+                else:self.add.setEnabled(True)
+            except:pass
+        else:
+            self.rest.setText('')
+            self.add.setEnabled(False)
 
     def product_choosen(self):
         conn = sqlite3.connect(DB)
@@ -482,18 +601,20 @@ class Buy(QtWidgets.QFrame):
         print(code)
         try:
             dt = curs.execute(f'select categorie, qt, price from products where code like "{code}"').fetchone()
-            self.categorie.setText(dt[0])
-            self.categorie.setEnabled(False)
+            self.categorie_.setText(dt[0])
+            self.categorie_.setReadOnly(True)
             self.qt_value = int(dt[1])
             self.rest.setText(f'{self.qt_value}"in the stock')
 
             self.price.setText(str(dt[2]))
 
         except:
-            self.categorie.setText('')
-            self.categorie.setEnabled(True)
+            self.categorie_.setText('')
+            self.categorie_.setReadOnly(False)
             self.rest.setText('0 in the stock')
             self.price.setText('')
+            self.qt_.setText('1')
+            self.qt_value = 0
 
 
     def refresh(self):
