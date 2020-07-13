@@ -64,6 +64,17 @@ class Main(QtWidgets.QWidget):
             person TEXT,
             paid TEXT);
         """)
+        curs.execute("""
+            CREATE TABLE IF NOT EXISTS debt (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            date_time TEXT, 
+            person TEXT,
+            product TEXT, 
+            qt INTEGER, 
+            total_price TEXT, 
+            operation TEXT, 
+            state TEXT);
+        """)
         conn.commit()
         conn.close()
         self.setWindowIcon(QtGui.QIcon('src/icons/logo.png'))
@@ -438,6 +449,8 @@ class Sell(QtWidgets.QFrame):
     def __init__(self):
         super(Sell, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/sell.ui'), self)
+        self.qt.setValidator(QIntValidator())
+        self.price.setValidator(QIntValidator())
 
 
 

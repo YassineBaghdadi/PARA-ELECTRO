@@ -64,19 +64,6 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QLineEdit" name="product_name">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>24</y>
-          <width>262</width>
-          <height>34</height>
-         </rect>
-        </property>
-        <property name="placeholderText">
-         <string>Product Name/Code*</string>
-        </property>
-       </widget>
        <widget class="QLineEdit" name="qt">
         <property name="geometry">
          <rect>
@@ -185,6 +172,40 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
+       </widget>
+       <widget class="QComboBox" name="product_name">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>24</y>
+          <width>262</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::ImhNone</set>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>   yassine</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>baghdadi</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Guercif</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </item>
@@ -338,6 +359,17 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>product_name</tabstop>
+  <tabstop>qt</tabstop>
+  <tabstop>buyer</tabstop>
+  <tabstop>price</tabstop>
+  <tabstop>is_paid</tabstop>
+  <tabstop>add</tabstop>
+  <tabstop>to_sell_table</tabstop>
+  <tabstop>sell</tabstop>
+  <tabstop>clear</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
