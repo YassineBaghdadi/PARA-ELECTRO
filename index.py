@@ -66,13 +66,9 @@ class Main(QtWidgets.QWidget):
         """)
         curs.execute("""
             CREATE TABLE IF NOT EXISTS debt (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            date_time TEXT, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,  
             person TEXT,
-            product TEXT, 
-            qt INTEGER, 
-            total_price TEXT, 
-            operation TEXT, 
+            total_price INTEGER, 
             state TEXT);
         """)
         conn.commit()
@@ -459,12 +455,13 @@ class Buy(QtWidgets.QFrame):
     def __init__(self):
         super(Buy, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/buy.ui'), self)
-        self.refresh()
+
 
         self.product_name.installEventFilter(self)
 
         self.completer = QCompleter()
         self.model = QStringListModel()
+        self.refresh()
         self.completer.setModel(self.model)
         # # self.product_name.textChanged.connect(self.product_txt_changing)
         # self.product_txt_changing()
@@ -492,6 +489,8 @@ class Buy(QtWidgets.QFrame):
         self.buy.clicked.connect(self.save_buy)
 
     def save_buy(self):
+        if self.to_buy_table.rowCount() < 1:
+            self.err.setText('<font color="red">Add Some Products to Buy</font>')
         to_update = []
         to_add = []
         conn = sqlite3.connect(DB)
@@ -514,13 +513,14 @@ class Buy(QtWidgets.QFrame):
 
 
         def add_history(i):
-            curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person) values(
+            curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person, paid) values(
                                                     "{str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}", 
                                                     "{i[0]}({i[1]})", 
                                                     "{i[3]}", 
                                                     "{int(i[5]) * int(i[3])}", 
                                                     "Buy",
-                                                    "{i[4]}")''')
+                                                    "{i[4]}",
+                                                    "{i[6]}")''')
             conn.commit()
 
         for i in to_add:
@@ -533,11 +533,17 @@ class Buy(QtWidgets.QFrame):
             ''')
             add_history(i)
 
+        if not self.is_paid.isChecked():#todo add/raise the debt table
+            pass
+
+
 
         conn.close()
-        print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
-        self.to_buy_table.clear()
-        self.to_buy_table.setColumnCount(len(self.table_header))
+        # print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
+
+        self.to_buy_table.clearContents()
+        [self.to_buy_table.removeRow(i) for i in range(self.to_buy_table.rowCount()+1, 0, -1)]
+        self.to_buy_table.removeRow(0)
 
 
 
@@ -578,12 +584,19 @@ class Buy(QtWidgets.QFrame):
             col = 0
             for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(),
                          self.seller.text(), self.price.text(), 'Yes' if self.is_paid.isChecked() else 'No', f'{int(self.qt_.text())*int(self.price.text())} DH']:
+
                 cell = QTableWidgetItem(str(item))
+
                 self.to_buy_table.setItem(0, col, cell)
+                if col == 6 and not self.is_paid.isChecked():
+                    self.to_buy_table.item(0, col).setBackground(QtGui.QColor(255, 153, 153))
                 col += 1
 
             self.seller.setText('')
             self.product_name.setCurrentIndex(0)
+            self.is_paid.setChecked(True)
+
+        self.refresh()
 
     def qt_changing(self):
         if self.qt_.text():
@@ -638,9 +651,8 @@ class Buy(QtWidgets.QFrame):
         ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products order by name asc').fetchall()])
         ll.insert(0, '')
         # ll = ['yassine', 'baghdadi', 'guercif']
-        try:
-            self.model.setStringList(self.curs.execute('select person from history where operation like "sell" order by asc').fetchall())
-        except:pass
+
+        self.model.setStringList(list(set(i[0] for i in self.curs.execute('select person from history').fetchall())))
         self.product_name.clear()
         self.product_name.addItems(ll)
         conn.close()
