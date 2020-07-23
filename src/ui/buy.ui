@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>802</width>
-    <height>632</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -100,7 +100,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>1</string>
+              <string/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -157,7 +157,7 @@
             <widget class="QCheckBox" name="is_paid">
              <property name="geometry">
               <rect>
-               <x>387</x>
+               <x>390</x>
                <y>133</y>
                <width>95</width>
                <height>30</height>
@@ -220,7 +220,7 @@
              <property name="editable">
               <bool>true</bool>
              </property>
-             <property name="placeholderText" stdset="0">
+             <property name="placeholderText">
               <string/>
              </property>
              <item>
@@ -403,9 +403,25 @@
             <number>0</number>
            </property>
            <item>
+            <widget class="QLabel" name="label_2">
+             <property name="minimumSize">
+              <size>
+               <width>112</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Facture Date :</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Preferred</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -414,6 +430,48 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="f_date">
+             <property name="maximumSize">
+              <size>
+               <width>216</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="placeholderText">
+              <string>Facture Date*</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="print_facture">
+             <property name="minimumSize">
+              <size>
+               <width>69</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Print Invoice</string>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
