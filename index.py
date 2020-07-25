@@ -571,6 +571,22 @@ class Buy(QtWidgets.QFrame):
                 "{str(tt_price)}",
                 "buy"
         )""")
+        debting = []
+
+        for r in range(self.to_buy_table.rowCount()):
+            tt = []
+            if self.to_buy_table.item(r, 6).text()[0].upper() == 'N':
+                for c in range(self.to_buy_table.columnCount()):
+                    tt.append(self.to_buy_table.item(r, c).text())
+            debting.append(tt)
+
+        print(enumerate(debting))
+        # for i , v in enumerate(debting):#todo here we are
+
+        # curs.execute(f'''
+        #     insert into debt (date_time, person, )
+        # ''')
+        print(debting)
         conn.commit()
         self.product_name.setCurrentIndex(0)
         self.categorie_.setText('')
