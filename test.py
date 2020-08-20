@@ -389,67 +389,68 @@
 # #     l.addWidget(edit)
 # #     box.show()
 # #     app.exec_()
-# import datetime
+import datetime
 import sqlite3
 #
-# import random, sqlite3
-# p = 'random_data/'
-# with open(f'{p}random_names.txt', 'r') as namesF, open(f'{p}random_categories_names.txt', 'r') as catF, open(f'{p}random_products_names.txt', 'r') as productsF:
-#     products = [str(i).replace(',', ' ').replace('\n', '') for i in productsF.readlines() if i]
-#     cats = [str(i).replace(',', ' ').replace('\n', '') for i in catF.readlines() if i]
-#     names = [str(i).replace(',', ' ').replace('\n', '') for i in namesF.readlines() if i]
-#
-#
-# print(products)
-# print(cats)
-# print(names)
-#
-#
-#
-# def random_dateTime():
-#     start_date = datetime.date(2017, 1, 1)
-#     end_date = datetime.date(2025, 2, 1)
-#
-#     time_between_dates = end_date - start_date
-#     days_between_dates = time_between_dates.days
-#     random_number_of_days = random.randrange(days_between_dates)
-#     random_date = start_date + datetime.timedelta(days=random_number_of_days)
-#
-#     rtime = int(random.random() * 86400)
-#     hours = int(rtime / 3600)
-#     minutes = int((rtime - hours * 3600) / 60)
-#     seconds = rtime - hours * 3600 - minutes * 60
-#
-#     time_string = '%02d:%02d:%02d' % (hours, minutes, seconds)
-#     return f'{random_date} {time_string}'
-#
+import random, sqlite3
+p = 'random_data/'
+with open(f'{p}random_names.txt', 'r') as namesF, open(f'{p}random_categories_names.txt', 'r') as catF, open(f'{p}random_products_names.txt', 'r') as productsF:
+    products = [str(i).replace(',', ' ').replace('\n', '') for i in productsF.readlines() if i]
+    cats = [str(i).replace(',', ' ').replace('\n', '') for i in catF.readlines() if i]
+    names = [str(i).replace(',', ' ').replace('\n', '') for i in namesF.readlines() if i]
+
+
+print(products)
+print(cats)
+print(names)
+
+
+
+def random_dateTime():
+    start_date = datetime.date(2017, 1, 1)
+    end_date = datetime.date(2025, 2, 1)
+
+    time_between_dates = end_date - start_date
+    days_between_dates = time_between_dates.days
+    random_number_of_days = random.randrange(days_between_dates)
+    random_date = start_date + datetime.timedelta(days=random_number_of_days)
+
+    rtime = int(random.random() * 86400)
+    hours = int(rtime / 3600)
+    minutes = int((rtime - hours * 3600) / 60)
+    seconds = rtime - hours * 3600 - minutes * 60
+
+    time_string = '%02d:%02d:%02d' % (hours, minutes, seconds)
+    return f'{random_date} {time_string}'
+
 #
 # print(random_dateTime())
+import random
 conn = sqlite3.connect('src/db.db')
 curs = conn.cursor()
-# done = []
-# for i in range(10000):
-#     prod = random.choice(products)
-#     while prod in done:
-#         prod = random.choice(products)
-#     done.append(prod)
-#
-#     code = random.randint(20, 20000)
-#     while code in done:
-#         code = random.randint(20, 20000)
-#     done.append(code)
-#
-#     try:
-#         curs.execute(f"""
-#                         INSERT INTO products (name, code, categorie, qt, price) VALUES('{prod}', '{str(code)}', '{random.choice(cats)}', '{random.randint(50, 1000)}', '{random.randint(50, 1000)}' )
-#                     """)
-#         conn.commit()
-#         print(f'{i}/10000 : DONE')
-#     except:print(f'{i}/10000 : FAILED')
-#
-#
-# print('all data added successfully')
-# conn.close()
+done = []
+for i in range(500):
+    prod = random.choice(products)
+    while prod in done:
+        prod = random.choice(products)
+    done.append(prod)
 
-dt = curs.execute(f'select categorie, qt, price from products where code like "{17834}"').fetchone()
-print(dt)
+    code = random.randint(20, 20000)
+    while code in done:
+        code = random.randint(20, 20000)
+    done.append(code)
+
+    try:
+        curs.execute(f"""
+                        INSERT INTO products (name, code, categorie, qt, price) VALUES('{prod}', '{str(code)}', '{random.choice(cats)}', '{random.randint(50, 1000)}', '{random.randint(50, 1000)}' )
+                    """)
+        conn.commit()
+        print(f'{i}/500 : DONE')
+    except:print(f'{i}/500 : FAILED')
+
+
+print('all data added successfully')
+conn.close()
+
+# dt = curs.execute(f'select categorie, qt, price from products where code like "{17834}"').fetchone()
+# print(dt)

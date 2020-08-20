@@ -1,6 +1,7 @@
 import datetime
 import os
 import platform
+import random
 import sys
 from time import sleep
 import sqlite3
@@ -68,33 +69,34 @@ class Main(QtWidgets.QWidget):
             total_price TEXT, 
             operation TEXT, 
             person TEXT,
-            paid TEXT);
+            paid TEXT,
+            invoice TEXT);
         """)
-        curs.execute("""
-            CREATE TABLE IF NOT EXISTS debt (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            date_time TEXT, 
-            person TEXT,
-            product TEXT, 
-            qt INTEGER, 
-            total_price TEXT, 
-            operation TEXT, 
-            state TEXT);
-        """)
-        curs.execute("""
-            CREATE TABLE IF NOT EXISTS factures (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            date_time TEXT, 
-            persons TEXT,
-            products TEXT, 
-            qt INTEGER, 
-            total_price TEXT, 
-            operation TEXT);
-        """)
+        # curs.execute("""
+        #     CREATE TABLE IF NOT EXISTS debt (
+        #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #     date_time TEXT,
+        #     person TEXT,
+        #     product TEXT,
+        #     qt INTEGER,
+        #     total_price TEXT,
+        #     operation TEXT,
+        #     state TEXT);
+        # """)
+        # curs.execute("""
+        #     CREATE TABLE IF NOT EXISTS factures (
+        #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #     date_time TEXT,
+        #     persons TEXT,
+        #     products TEXT,
+        #     qt INTEGER,
+        #     total_price TEXT,
+        #     operation TEXT);
+        # """)
         conn.commit()
         conn.close()
         self.setWindowIcon(QtGui.QIcon('src/icons/logo.png'))
-        self.setGeometry(QRect(200, 200, 855, 600))
+        self.setGeometry(QRect(200, 100, 1242, 651))
 
         style = '''
             
@@ -509,8 +511,8 @@ class Buy(QtWidgets.QFrame):
 
 
     def save_buy(self):
-        print(self.to_buy_table.rowCount())
-        print(self.to_buy_table.columnCount())
+        # print(self.to_buy_table.rowCount())
+        # print(self.to_buy_table.columnCount())
         bought = []
         to_update = []
         to_add = []
@@ -518,6 +520,15 @@ class Buy(QtWidgets.QFrame):
         curs = conn.cursor()
         exists_codes = [str(i[0]) for i in curs.execute('select code from products').fetchall()]
 
+
+        exists_invoices_ids = [str(i[0]) for i in curs.execute('SELECT invoice FROM history').fetchall()]
+        pp = 'abcdefghijklmnopqrstuvwxyzABCDEFGHJLMNPQRSTUVWYXZ0123456789'
+        def get_facture_id() -> str:#todo bug here
+
+            if (id := ''.join(random.choices(pp.split(), k=10))) in exists_invoices_ids:
+                get_facture_id()
+            return id
+        facture_id = get_facture_id()
         for r in range(self.to_buy_table.rowCount()):
             if str(self.to_buy_table.item(r, 1).text()) in exists_codes:
                 tmp = []
@@ -533,18 +544,23 @@ class Buy(QtWidgets.QFrame):
 
 
 
+        buy_time =f'{self.f_date.text()} {str(strftime(f"%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime(f"%Y-%m-%d %H:%M:%S", gmtime()))
         def add_history(i):
-            buy_time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-            curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person) values(
+
+            '''date_time TEXT, product TEXT, qt INTEGER, total_price TEXT, operation TEXT, person TEXT, paid TEXT, invoice TEXT);'''
+
+            curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person, paid, invoice) values(
                                                     "{buy_time}", 
                                                     "{i[0]}({i[1]})", 
                                                     "{i[3]}", 
                                                     "{int(i[5]) * int(i[3])}", 
                                                     "Buy",
-                                                    "{i[4]}")''')
+                                                    "{i[4]}",
+                                                    "{"No" if i[6][0].upper() == "N" else buy_time}",
+                                                    "{facture_id}")''')
             conn.commit()
 
-            bought.append(curs.execute('select seq from sqlite_sequence where name="history"').fetchone()[0])
+            # bought.append(curs.execute('select seq from sqlite_sequence where name="history"').fetchone()[0])
         for i in to_add:
             curs.execute(f'''INSERT INTO products (name, code, categorie, qt, price) values("{i[0]}", "{i[1]}", "{i[2]}", {int(i[3])}, "{i[5]}")''')
             add_history(i)
@@ -562,47 +578,46 @@ class Buy(QtWidgets.QFrame):
         tt_price = 0
         for i in range(self.to_buy_table.rowCount()):
             tt_price += int(self.to_buy_table.item(i, 5).text())
-        f_dd = f'{self.f_date.text()} {str(strftime("%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-        curs.execute(f"""insert into factures (date_time, persons, products, qt, total_price, operation) values(
-                "{f_dd}",
-                "{'-'.join(list(str(self.to_buy_table.item(i, 4).text()) for i in range(self.to_buy_table.rowCount())))}",
-                "{'-'.join([str(i) for i in bought])}",
-                {tt_qt},
-                "{str(tt_price)}",
-                "buy"
-        )""")
+
+
+
+        # f_dd = f'{self.f_date.text()} {str(strftime("%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+        # curs.execute(f"""insert into factures (date_time, persons, products, qt, total_price, operation) values(
+        #         "{f_dd}",
+        #         "{'-'.join(list(str(self.to_buy_table.item(i, 4).text()) for i in range(self.to_buy_table.rowCount())))}",
+        #         "{'-'.join([str(i) for i in bought])}",
+        #         {tt_qt},
+        #         "{str(tt_price)}",
+        #         "buy"
+        # )""")
         debting = []
 
-        for r in range(self.to_buy_table.rowCount()):
-            tt = []
-            if self.to_buy_table.item(r, 6).text()[0].upper() == 'N':
-                for c in range(self.to_buy_table.columnCount()):
-                    tt.append(self.to_buy_table.item(r, c).text())
-            debting.append(tt)
-
-        print(enumerate(debting))
+        # for r in range(self.to_buy_table.rowCount()):
+        #     tt = []
+        #     if self.to_buy_table.item(r, 6).text()[0].upper() == 'N':
+        #         for c in range(self.to_buy_table.columnCount()):
+        #             tt.append(self.to_buy_table.item(r, c).text())
+        #     debting.append(tt)
+        #
+        # print(enumerate(debting))
         # for i , v in enumerate(debting):#todo here we are
 
         # curs.execute(f'''
         #     insert into debt (date_time, person, )
         # ''')
-        print(debting)
+        # print(debting)
         conn.commit()
-        self.product_name.setCurrentIndex(0)
-        self.categorie_.setText('')
-        self.qt_.setText('')
-        self.seller.setText('')
-        self.price.setText('')
-        self.is_paid.setChecked(True)
-        self.f_date.setText(str(strftime('%d-%M-%Y')))
+
         # print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
         # self.to_buy_table.clear()
         # self.to_buy_table.setColumnCount(len(self.table_header))
         # self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
+
         if self.print_facture.isChecked():
             doc = Document()
             doc.add_heading(STORE_NAME, 0)
-            f_name = f'''Facture N°: {curs.execute("select seq from sqlite_sequence where name='factures'").fetchone()[0]}, for : {f_dd.replace(' ', '_') if platform.system() == 'Linux' else f_dd.replace(':', '-').replace(' ', '_')}'''
+            # f_name = f'''Facture N°: {curs.execute("select seq from sqlite_sequence where name='factures'").fetchone()[0]}, for : {f_dd.replace(' ', '_') if platform.system() == 'Linux' else f_dd.replace(':', '-').replace(' ', '_')}'''
+            f_name = f'''Facture Id: {facture_id}, for : {buy_time}'''
 
             doc.add_heading(f_name, 1)
 
@@ -619,30 +634,44 @@ class Buy(QtWidgets.QFrame):
 
 
             hdr_cells = table.rows[0].cells
-            for c in range(self.to_buy_table.columnCount()):
-                cc = self.to_buy_table.horizontalHeaderItem(c).text()
-                hdr_cells[c].text = str(cc)
+            hdr_labels = [i for i in 'Product Categorie Quantity Seller is_Paid Total'.split(' ')]
+
+            for c in range(len(hdr_labels)):
+                # cc = self.to_buy_table.horizontalHeaderItem(c).text()
+                hdr_cells[c].text = str(hdr_labels[c])
+
             rows = []
             table.left_margin = Cm(1.5)
             table.right_margin = Cm(1.5)
             for row in range(self.to_buy_table.rowCount()):
                 rr = []
-                for col in range(self.to_buy_table.columnCount()):
+                for col in [0, 1, 2, 3, 4, 6, 7]:
                     rr.append(str(self.to_buy_table.item(row, col).text()))
                 rows.append(rr)
-            print(rows)
+            # print(rows)
             for row in rows:
                 tr = table.add_row()
                 for idx, col in enumerate(row):
-                    tr.cells[idx].text = col if col else '-'
+                    tr.cells[idx].text = col if col else '---'
 
-            filename = QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="Word (*.doc *.docx)", directory=DESKTOP)[0]
-            if not QFileInfo(filename).suffix():
-                filename += '.docx'
-            doc.save(filename)
+            if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="Word (*.doc *.docx)", directory=DESKTOP)[0]:#todo give it a name
+                if not QFileInfo(filename).suffix():
+                    filename += '.docx'
+                doc.save(filename)
+            else:
+                doc.save(DESKTOP)
+
         self.print_facture.setChecked(False)
         conn.close()
         [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
+
+        self.product_name.setCurrentIndex(0)
+        self.categorie_.setText('')
+        self.qt_.setText('')
+        self.seller.setText('')
+        self.price.setText('')
+        self.is_paid.setChecked(True)
+        self.f_date.setText(str(strftime('%d-%M-%Y')))
 
     def table_select_event(self):
         # row = [str(i.text()) for i in self.to_buy_table.selectedItems()]
