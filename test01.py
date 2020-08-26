@@ -27,6 +27,7 @@ doc = SimpleDocTemplate('test.pdf', pagesize=letter)
 #
 # doc.setFont('s', 10)
 # doc.drawString(100, 100, 'Yassine Baghdadi')
+import pandas as pd
 styles_list = getSampleStyleSheet()
 data = [headers]
 for i in con.execute('SELECT * FROM products').fetchall():
@@ -35,6 +36,8 @@ for i in con.execute('SELECT * FROM products').fetchall():
         tt.append(Paragraph(str(c), styles_list['Normal']))
     data.append(tt)
 
+df = pd.DataFrame(data=data, columns=headers)
+df.reset_index(drop=True, inplace=True)
 
 title = Paragraph('PARA-ELECTRO', styles_list['title'], )
 
