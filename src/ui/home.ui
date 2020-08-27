@@ -70,7 +70,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="sells_operations_counter">
+           <widget class="QLabel" name="counter1">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -104,7 +104,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="buy_operations_counter">
+           <widget class="QLabel" name="counter2">
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -129,7 +129,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="earning_counter">
+           <widget class="QLabel" name="counter3">
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -154,7 +154,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="store_n_manager_debting_counter">
+           <widget class="QLabel" name="counter4">
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -179,7 +179,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="store_debting_counter">
+           <widget class="QLabel" name="counter5">
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -211,7 +211,7 @@
      <item>
       <widget class="QFrame" name="frame_4">
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
@@ -240,20 +240,36 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QLabel" name="label_6">
-              <property name="maximumSize">
+             <widget class="QComboBox" name="comboBox">
+              <property name="minimumSize">
                <size>
-                <width>16777215</width>
-                <height>25</height>
+                <width>253</width>
+                <height>0</height>
                </size>
               </property>
-              <property name="text">
-               <string>Recent Operations</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
               </property>
              </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <widget class="QLineEdit" name="search_txt">
@@ -268,41 +284,6 @@
               </property>
               <property name="clearButtonEnabled">
                <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="search_btn">
-              <property name="maximumSize">
-               <size>
-                <width>33</width>
-                <height>33</height>
-               </size>
-              </property>
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">:hover{border:1px solid grey;}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="return_btn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>84</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Return</string>
               </property>
              </widget>
             </item>

@@ -70,7 +70,8 @@ class Main(QtWidgets.QWidget):
             code TEXT, 
             categorie TEXT, 
             qt INTEGER, 
-            price TEXT);
+            price TEXT,
+            sell_price TEXT);
         """)
         curs.execute("""
             CREATE TABLE IF NOT EXISTS history (
@@ -79,10 +80,10 @@ class Main(QtWidgets.QWidget):
             product TEXT, 
             qt INTEGER, 
             total_price TEXT, 
-            operation TEXT, 
             person TEXT,
             paid TEXT,
-            invoice TEXT);
+            invoice TEXT,
+            operation TEXT);
         """)
         # curs.execute("""
         #     CREATE TABLE IF NOT EXISTS debt (
@@ -235,20 +236,20 @@ class Main(QtWidgets.QWidget):
         self.menu_icon.setScaledContents(True)
 
 
-        self.buy_icon.setPixmap(QPixmap('src/icons/buy.png'))
-        self.buy_icon.setScaledContents(True)
+        # self.buy_icon.setPixmap(QPixmap('src/icons/buy.png'))
+        # self.buy_icon.setScaledContents(True)
 
         self.home_icon.setPixmap(QPixmap('src/icons/home.png'))
         self.home_icon.setScaledContents(True)
 
 
-        self.return_icon.setPixmap(QPixmap('src/icons/return.png'))
-        self.return_icon.setScaledContents(True)
+        # self.return_icon.setPixmap(QPixmap('src/icons/return.png'))
+        # self.return_icon.setScaledContents(True)
 
         self.debt_icon.setPixmap(QPixmap('src/icons/debt.png'))
         self.debt_icon.setScaledContents(True)
 
-        self.sell_icon.setPixmap(QPixmap('src/icons/sell.png'))
+        self.sell_icon.setPixmap(QPixmap('src/icons/buy.png'))
         self.sell_icon.setScaledContents(True)
 
         self.statistics_icon.setPixmap(QPixmap('src/icons/statics.png'))
@@ -271,8 +272,8 @@ class Main(QtWidgets.QWidget):
         self.sideBar.installEventFilter(self)
         self.home_frame.installEventFilter(self)
         self.sell_frame.installEventFilter(self)
-        self.buy_frame.installEventFilter(self)
-        self.return_frame.installEventFilter(self)
+        # self.buy_frame.installEventFilter(self)
+        # self.return_frame.installEventFilter(self)
         self.debt_frame.installEventFilter(self)
         self.statistics_frame.installEventFilter(self)
         self.logout_frame.installEventFilter(self)
@@ -300,17 +301,17 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.HoverLeave and source is self.home_frame):
             self.home_frame.setStyleSheet(f'background-color: {self.side_bg};')
 
-        elif (event.type() == QtCore.QEvent.HoverEnter and source is self.buy_frame):
-            self.buy_frame.setStyleSheet(f'background-color: {self.hover_color};')
+        # elif (event.type() == QtCore.QEvent.HoverEnter and source is self.buy_frame):
+        #     self.buy_frame.setStyleSheet(f'background-color: {self.hover_color};')
 
-        elif (event.type() == QtCore.QEvent.HoverLeave and source is self.buy_frame):
-            self.buy_frame.setStyleSheet(f'background-color: {self.side_bg};')
+        # elif (event.type() == QtCore.QEvent.HoverLeave and source is self.buy_frame):
+        #     self.buy_frame.setStyleSheet(f'background-color: {self.side_bg};')
 
-        elif (event.type() == QtCore.QEvent.HoverEnter and source is self.return_frame):
-            self.return_frame.setStyleSheet(f'background-color: {self.hover_color};')
+        # elif (event.type() == QtCore.QEvent.HoverEnter and source is self.return_frame):
+        #     self.return_frame.setStyleSheet(f'background-color: {self.hover_color};')
 
-        elif (event.type() == QtCore.QEvent.HoverLeave and source is self.return_frame):
-            self.return_frame.setStyleSheet(f'background-color: {self.side_bg};')
+        # elif (event.type() == QtCore.QEvent.HoverLeave and source is self.return_frame):
+        #     self.return_frame.setStyleSheet(f'background-color: {self.side_bg};')
 
         elif (event.type() == QtCore.QEvent.HoverEnter and source is self.debt_frame):
             self.debt_frame.setStyleSheet(f'background-color: {self.hover_color};')
@@ -347,8 +348,8 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.sell_frame):
             self.change_widget(Sell())
 
-        elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.buy_frame):
-            self.change_widget(Buy())
+        # elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.buy_frame):
+        #     self.change_widget(Buy())
 
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.debt_frame):
             self.dept = Debt()
@@ -383,7 +384,7 @@ class Main(QtWidgets.QWidget):
         self.frame.setGeometry(QRect(self.sideBar.width()-1, self.title_frame.height(), self.width()-self.sideBar.width()-2, self.height()-self.title_frame.height()))
 
     def open_menu(self, event):
-        duration, w0, w1 = 200, 68, 212
+        duration, w0, w1 = 200, 68, 270
         if self.m:
             self.anim = QPropertyAnimation(self.sideBar, b"geometry")
             self.anim.setDuration(duration)
@@ -409,25 +410,70 @@ class Home(QtWidgets.QFrame):
     def __init__(self):
         super(Home, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/home.ui'), self)
-        self.search_btn.setPixmap(QPixmap('src/icons/search.png'))
-        self.search_btn.setScaledContents(True)
-        self.search_btn.installEventFilter(self)
+        con = sqlite3.connect(DB)
+        cur = con.cursor()
+        # self.search_btn.setPixmap(QPixmap('src/icons/search.png'))
+        # self.search_btn.setScaledContents(True)
+        # self.search_btn.installEventFilter(self)
         self.search_txt.installEventFilter(self)
-        self.search_txt.setFixedWidth(0)
+        # self.search_txt.setFixedWidth(0)
         self.history_table.itemSelectionChanged.connect(self.table_select_event)
         self.table_header = ['id', 'Date/Time', 'Product', 'Quantity', 'Total Price', 'Operation', 'Person']
         self.history_table.setColumnCount(len(self.table_header))
         self.history_table.setHorizontalHeaderLabels(self.table_header)
         self.history_table.resizeColumnsToContents()
         # self.history_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
-        self.history_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
-        self.return_btn.clicked.connect(self.return_goods)
+        for i in range(self.history_table.columnCount()):
+            self.history_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
+        date = str(datetime.datetime.today().date())
+        month_sells_earn = 0
+        today_sells_earn = 0
+        today_goods_sells = []
+        month_goods_sells = []
+        cridit = 0 #from sells operations (you have to pay)
+        cridit_sells_count = 0
+        dibit = 0 #from buys operations (you have to get paid)
+        dibit_buys_count = 0
+
+        history = cur.execute('select * from history').fetchall()
+        for i in history:
+            if str(i[1]).split('-')[0] == date.split('-')[0] and str(i[1]).split('-')[1] == date.split('-')[1] and  str(i[1]).split('-')[2] == date.split('-')[2] and i[5] == 'Sell':#for this month
+                today_sells_earn += int(i[4])
+                today_goods_sells.append(str(i[2]).split('(')[1].replace(')', ''))
+
+            if str(i[1]).split('-')[1] == date.split('-')[1] and  str(i[1]).split('-')[2] == date.split('-')[2] and i[5] == 'Sell':#for this month
+                month_sells_earn += int(i[4])
+                month_goods_sells.append(str(i[2]).split('(')[1].replace(')', ''))
+
+
+        products = cur.execute('select * from products').fetchall()
+        today_rass_lmal = 0
+        month_rass_lmal = 0
+        for s in today_goods_sells:
+            for i in products:
+                if s == i[2]:
+                    today_rass_lmal += i[-1]
+        for s in month_goods_sells:
+            for i in products:
+                if s == i[2]:
+                    month_rass_lmal += i[-1]
+
+
+        month_earn = month_sells_earn - month_rass_lmal
+        today_earn = today_sells_earn - today_rass_lmal
+
+        self.counter1.setText(f'{month_earn}(<font color=green>+{today_earn}</font>)')
+
+
+
+
+
+
+
+
+
+        # self.return_btn.clicked.connect(self.return_goods)
 
     def refresh(self, key=None):
         # conn = sqlite3.connect(DB)
@@ -460,18 +506,18 @@ class Home(QtWidgets.QFrame):
         else:
             self.return_btn.setEnabled(False)
 
-    def eventFilter(self, source, event):
-        if source is self.search_btn:
-
-            if event.type() == QtCore.QEvent.MouseButtonPress:
-                # self.search_txt.setText('')
-                self.search_txt.setFixedWidth(311)
-            elif event.type() == QtCore.QEvent.HoverEnter:
-                self.search_btn.setStyleSheet('border:1px solid grey;')
-            elif event.type() == QtCore.QEvent.HoverLeave :
-                self.search_btn.setStyleSheet('border:0px solid grey;')
-
-        return super(Home, self).eventFilter(source, event)
+    # def eventFilter(self, source, event):
+    #     if source is self.search_btn:
+    #
+    #         if event.type() == QtCore.QEvent.MouseButtonPress:
+    #             # self.search_txt.setText('')
+    #             self.search_txt.setFixedWidth(311)
+    #         elif event.type() == QtCore.QEvent.HoverEnter:
+    #             self.search_btn.setStyleSheet('border:1px solid grey;')
+    #         elif event.type() == QtCore.QEvent.HoverLeave :
+    #             self.search_btn.setStyleSheet('border:0px solid grey;')
+    #
+    #     return super(Home, self).eventFilter(source, event)
 
 
 
@@ -501,7 +547,7 @@ class Sell(QtWidgets.QFrame):
         self.add.clicked.connect(self.add_row)
 
         self.to_buy_table.itemSelectionChanged.connect(self.table_select_event)
-        self.table_header = ['Product', 'Code', 'Categorie', 'Quantity', 'Operation', 'Person', 'Price', 'Paid', 'Total']
+        self.table_header = ['Product', 'Code', 'Categorie', 'Quantity', 'Person', 'Price', 'Paid', 'Total']
         self.to_buy_table.setColumnCount(len(self.table_header))
         self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
         self.to_buy_table.resizeColumnsToContents()
@@ -520,20 +566,20 @@ class Sell(QtWidgets.QFrame):
         #     '<ctrl>+<alt>+h': self.save_buy()}) as h:
         #     h.join()
 
-        self.operation_type.stateChanged.connect(self.change_operation_type)
+        # self.operation_type.stateChanged.connect(self.change_operation_type)
         self.categorie_.setReadOnly(True)
 
         self.qt_bought = {}
 
 
 
-    def change_operation_type(self):
-        if self.operation_type.isChecked():
-            self.categorie_.setReadOnly(False)
-            self.seller.setPlaceholderText('Seller Name *')
-        else:
-            self.categorie_.setReadOnly(True)
-            self.seller.setPlaceholderText('Buyer Name (Optional)')
+    # def change_operation_type(self):
+    #     if self.operation_type.isChecked():
+    #         self.categorie_.setReadOnly(False)
+    #         self.seller.setPlaceholderText('Seller Name *')
+    #     else:
+    #         self.categorie_.setReadOnly(True)
+    #         self.seller.setPlaceholderText('Buyer Name (Optional)')
 
 
     def eventFilter(self, obj, event):
@@ -546,7 +592,7 @@ class Sell(QtWidgets.QFrame):
 
 
 
-    def save(self):#todo make all of this compatible with salles and buys operations
+    def save(self):
         if self.to_buy_table.rowCount():
             # print(self.to_buy_table.rowCount())
             # print(self.to_buy_table.columnCount())
@@ -574,49 +620,24 @@ class Sell(QtWidgets.QFrame):
                     tmp.append(str(self.to_buy_table.item(r, c).text()))
                 dt.append(tmp)
 
-
-
-            # for r in range(self.to_buy_table.rowCount()):
-            #     if str(self.to_buy_table.item(r, 1).text()) in exists_codes:
-            #         tmp = []
-            #         for c in range(self.to_buy_table.columnCount()):
-            #             tmp.append(str(self.to_buy_table.item(r, c).text()))
-            #         to_update.append(tmp)
-            #     else:
-            #         tmp = []
-            #         for c in range(self.to_buy_table.columnCount()):
-            #             itm = str(self.to_buy_table.item(r, c).text())
-            #             tmp.append(itm)
-            #         to_add.append(tmp)
-
-
-
             buy_time =f'{self.f_date.text()} {str(strftime(f"%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime(f"%Y-%m-%d %H:%M:%S", gmtime()))
 
 
             for row in dt:
-                print(row)
-                if str(row[3]).lower() == 'buy':
-                    if row[1] in exists_codes :
-                        curs.execute(f'''
-                                    UPDATE products SET qt = qt + {int(row[3])} where code like "{row[1]}"
-                                    ''')
-                    else:
-                        curs.execute(f'''INSERT INTO products (name, code, categorie, qt, price) values("{row[0]}", "{row[1]}", "{row[2]}", {int(row[3])}, "{row[6]}")''')
-                else:
-                    curs.execute(f'''
+                curs.execute(f'''
                                     UPDATE products SET qt = qt - {int(row[3])} where code like "{row[1]}"
                                     ''')
                 curs.execute(
-                    f'''INSERT INTO history (date_time, product, qt, total_price, operation, person, paid, invoice) values(
+                    f'''INSERT INTO history (date_time, product, qt, total_price, person, paid, invoice, operation) values(
                                                                         "{buy_time}", 
                                                                         "{row[0]}({row[1]})", 
                                                                         "{row[3]}", 
-                                                                        "{int(row[6]) * int(row[3])}", 
-                                                                        "{row[4]}",
+                                                                        "{int(str(row[7]).split(' ')[0]) * int(row[3])}",
                                                                         "{row[5]}",
                                                                         "{"No" if row[7][0].upper() == "N" else buy_time}",
-                                                                        "{facture_id}")''')
+                                                                        "{facture_id}",
+                                                                        "sell"
+                                                                        )''')
                 conn.commit()
 
 
@@ -638,18 +659,12 @@ class Sell(QtWidgets.QFrame):
             # self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
 
             if self.print_facture.isChecked():
-
-                buys = [[i.replace('_', ' ') for i in 'Product Categorie Seller is_Paid Quantity Total'.split(' ')]]
-                selles = [[i.replace('_', ' ') for i in 'Product Categorie Buyer is_Paid Quantity Total'.split(' ')]]
-
+                data = [[i.replace('_', ' ') for i in 'Product Categorie Buyer is_Paid Quantity Total'.split(' ')]]
                 for i in dt:
-                    tmp = [f'{i[0]}({i[1]})', i[2], i[5], i[7], i[3], i[8]]
+                    data.append([f'{i[0]}({i[1]})', i[2], i[4], i[6], str(i[3]), i[-1]])
 
-                    if str(i[4]).lower() == 'buy':
-                        buys.append(tmp)
 
-                    else:
-                        selles.append(tmp)
+
 
 
 
@@ -691,27 +706,12 @@ class Sell(QtWidgets.QFrame):
                         ('GRID', (0, 0), (-1, -2), 1, colors.black),
                         ('GRID', (-2, -1), (-1, -1), 1, colors.black),
                     ])
-                    if buys:
-                        # buys.insert(0, [i.replace('_', ' ') for i in 'Product Categorie Seller is_Paid Quantity Total'.split(' ')])
-                        print(f'Buys : {"#"*20}')
-                        print(buys)
-                        buys.append([' ', ' ', ' ', ' ', sum([int(i[4]) for i in buys[1:]] ), f'{sum([int(i[-1].split(" ")[0]) for i in buys[1:]] )} DH'])
-                        buys_table = Table(buys)
-                        buys_table.setStyle(style)
-                        ttl = Paragraph('Buys Operations : ', style=styles["h3"])
-                        elems.append(ttl)
-                        elems.append(buys_table)
-
-                    if selles:
-                        # selles.insert(0, [i.replace('_', ' ') for i in 'Product Categorie Buyer is_Paid Quantity Total'.split(' ')])
-                        print(f'selles : {"#"*20}')
-                        print(selles)
-                        selles.append([' ', ' ', ' ', ' ', sum([int(i[4]) for i in selles[1:]] ), f'{sum([int(i[-1].split(" ")[0]) for i in selles[1:]] )} DH'])
-                        selles_table = Table(selles)
-                        selles_table.setStyle(style)
-                        ttl1 = Paragraph('Sells Operations : ', style=styles["h3"])
-                        elems.append(ttl1)
-                        elems.append(selles_table)
+                    data.append([' ', ' ', ' ', ' ', sum([int(i[-2]) for i in data[1:]] ), f'{sum([int(i[-1].split(" ")[0]) for i in data[1:]] )} DH'])
+                    selles_table = Table(data)
+                    selles_table.setStyle(style)
+                    ttl1 = Paragraph('Sells Operations : ', style=styles["h3"])
+                    elems.append(ttl1)
+                    elems.append(selles_table)
 
 
                     doc.build(elems)
@@ -721,7 +721,7 @@ class Sell(QtWidgets.QFrame):
                     notification.notify(title='canceled', message='the facture file has been canceled', timeout=5)
 
             self.print_facture.setChecked(False)
-            self.operation_type.setChecked(False)
+            # self.operation_type.setChecked(False)
             conn.close()
             [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
 
@@ -768,7 +768,7 @@ class Sell(QtWidgets.QFrame):
             if self.seller.text() == '':
                 self.seller.setText('-')
 
-            if not self.operation_type.isChecked() and self.product_name.currentText() and self.product_name.currentText().split( ' - ')[0].strip() not in self.all_codes:
+            if self.product_name.currentText() and self.product_name.currentText().split( ' - ')[0].strip() not in self.all_codes:
                 notification.notify(title='error', message='it\'s seems you have no such product with this infos')
                 return
 
@@ -778,7 +778,7 @@ class Sell(QtWidgets.QFrame):
             row = self.to_buy_table.rowCount()
             self.to_buy_table.insertRow(0)
             col = 0
-            for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(), 'Buy' if self.operation_type.isChecked() else 'Sell',
+            for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(),
                          self.seller.text(), self.price.text(), 'Yes' if self.is_paid.isChecked() else 'No', f'{int(self.qt_.text())*int(self.price.text())} DH']:
                 cell = QTableWidgetItem(str(item))
                 self.to_buy_table.setItem(0, col, cell)
@@ -788,17 +788,7 @@ class Sell(QtWidgets.QFrame):
             self.product_name.setCurrentIndex(0)
             self.is_paid.setChecked(True)
             self.qt_.setText('')
-            code = str(self.product_name.currentText().split('-')[0]).strip()
-            if self.operation_type.isChecked():
-                if code in self.qt_bought:
-                    self.qt_bought[code] = '+' +  str(int(''.join(str(self.qt_bought[code]).split()[1:])) + int(self.qt_.text()))
-                else:
-                    self.qt_bought[code] = '+' + self.qt_.text()
-            else:
-                if code in self.qt_bought:
-                    self.qt_bought[code] = '-' +  str(int(''.join(str(self.qt_bought[code]).split()[1:])) - int(self.qt_.text()))
-                else:
-                    self.qt_bought[code] = '-' + self.qt_.text()
+
 
 
     def qt_changing(self):
@@ -808,23 +798,22 @@ class Sell(QtWidgets.QFrame):
                 return
             qt = self.qt_value
             code = str(self.product_name.currentText()).split('-')[0].strip()
-            if code in self.qt_bought:#todo milti operation qt problem
-                if self.qt_bought[code] == '-':
-                    qt -= int(''.join(self.qt_bought[code].split()[1:]))
-                else:
-                    qt += int(''.join(self.qt_bought[code].split()[1:]))
+
+            for r in range(self.to_buy_table.rowCount()):
+                if self.to_buy_table.item(r, 1).text() == code:
+                    if str(self.to_buy_table.item(r, 4).text()).lower() == 'buy':
+                        qt += int(self.to_buy_table.item(r, 3).text())
+                    else:
+                        qt -= int(self.to_buy_table.item(r, 3).text())
 
 
-            if self.operation_type.isChecked():
-                self.rest.setText(f'{int(self.qt_.text()) + qt}"in the stock')
+
+            if int(qt - int(self.qt_.text()))>= 0:
+                self.rest.setText(f'{qt - int(self.qt_.text())}"in the stock')
                 self.add.setEnabled(True)
             else:
-                if (qt - int(self.qt_.text()) )>= 0:
-                    self.rest.setText(f'{qt - int(self.qt_.text())}"in the stock')
-                    self.add.setEnabled(True)
-                else:
-                    self.rest.setText(f'<font color="red">Error</font> ')
-                    self.add.setEnabled(False)
+                self.rest.setText(f'<font color="red">Error</font> ')
+                self.add.setEnabled(False)
 
 
             # try:
@@ -845,12 +834,13 @@ class Sell(QtWidgets.QFrame):
         else:
             # self.rest.setText('')
             self.add.setEnabled(False)
+            self.rest.setText('')
 
     def product_choosen(self):
         conn = sqlite3.connect(DB)
         curs = conn.cursor()
         code = str(self.product_name.currentText()).split("-")[0].replace(" ", "")
-        dt = curs.execute(f'select categorie, qt, price from products where code like "{code}"').fetchone()
+        dt = curs.execute(f'select categorie, qt, sell_price from products where code like "{code}"').fetchone()
         if dt:
             self.categorie_.setText(dt[0])
             self.categorie_.setReadOnly(True)
@@ -858,7 +848,7 @@ class Sell(QtWidgets.QFrame):
             self.rest.setText(f'{self.qt_value}"in the stock')
 
             self.price.setText(str(dt[2]))
-            self.price.setReadOnly(True)
+            # self.price.setReadOnly(True)
         else:
             self.categorie_.setText('')
             self.categorie_.setReadOnly(False)
@@ -866,15 +856,7 @@ class Sell(QtWidgets.QFrame):
             self.price.setText('')
             # self.qt_.setText('1')
             self.qt_value = 0
-            self.price.setReadOnly(False)
-
-
-        if self.operation_type.isChecked():
-            #for buys operations
-            pass
-        else:
-            #for selles operations
-            pass
+            # self.price.setReadOnly(False)
 
         conn.close()
 
@@ -910,390 +892,390 @@ class Sell(QtWidgets.QFrame):
 
 
 
-
-
-
-class Buy(QtWidgets.QFrame):
-    def __init__(self):
-        super(Buy, self).__init__()
-        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/buy.ui'), self)
-
-        self.product_name.installEventFilter(self)
-
-        self.completer = QCompleter()
-        self.model = QStringListModel()
-        self.completer.setModel(self.model)
-        # # self.product_name.textChanged.connect(self.product_txt_changing)
-        # self.product_txt_changing()
-        self.seller.installEventFilter(self)
-        self.seller.setCompleter(self.completer)
-        self.product_name.currentTextChanged.connect(self.product_choosen)
-        self.qt_.textChanged.connect(self.qt_changing)
-        self.qt_.installEventFilter(self)
-
-        self.qt_.setValidator(QIntValidator())
-        self.price.setValidator(QIntValidator())
-        self.price.installEventFilter(self)
-        # conn.close()
-        self.qt_value = 0
-        self.add.clicked.connect(self.add_row)
-
-        self.to_buy_table.itemSelectionChanged.connect(self.table_select_event)
-        self.table_header = [ 'Product', 'Code', 'Categorie', 'Quantity', 'Seller', 'Price', 'Paid', 'Total']
-        self.to_buy_table.setColumnCount(len(self.table_header))
-        self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
-        self.to_buy_table.resizeColumnsToContents()
-        # self.to_buy_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
-        for i in range(len(self.table_header)):
-            self.to_buy_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-
-        self.clear.setEnabled(False)
-        self.clear.clicked.connect(self.del_row)
-        self.buy.clicked.connect(self.save_buy)
-        self.f_date.setText('-'.join(str(datetime.datetime.today().date()).split('-')[::-1]))
-        [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
-
-        self.refresh()
-        # with keyboard.GlobalHotKeys({
-        #     '<ctrl>+<alt>+h': self.save_buy()}) as h:
-        #     h.join()
-
-    def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.KeyPress :
-            if event.key() == QtCore.Qt.Key_Return :
-                if obj is self.qt_ or obj is self.seller or obj is self.price:
-                    self.add_row()
-
-        return super().eventFilter(obj, event)
-
-    def save_buy(self):
-        if self.to_buy_table.rowCount():
-            # print(self.to_buy_table.rowCount())
-            # print(self.to_buy_table.columnCount())
-            bought = []
-            to_update = []
-            to_add = []
-            conn = sqlite3.connect(DB)
-            curs = conn.cursor()
-            exists_codes = [str(i[0]) for i in curs.execute('select code from products').fetchall()]
-
-
-            exists_invoices_ids = [str(i[0]) for i in curs.execute('SELECT invoice FROM history').fetchall()]
-            pp = 'a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H J L M N P Q R S T U V W Y X Z 0 1 2 3 4 5 6 7 8 9'
-            def get_facture_id() -> str:
-                id = ''.join(random.choices(pp.split(), k=10))
-                if id in exists_invoices_ids:
-                    get_facture_id()
-                return id
-            facture_id = get_facture_id()
-            for r in range(self.to_buy_table.rowCount()):
-                if str(self.to_buy_table.item(r, 1).text()) in exists_codes:
-                    tmp = []
-                    for c in range(self.to_buy_table.columnCount()):
-                        tmp.append(str(self.to_buy_table.item(r, c).text()))
-                    to_update.append(tmp)
-                else:
-                    tmp = []
-                    for c in range(self.to_buy_table.columnCount()):
-                        itm = str(self.to_buy_table.item(r, c).text())
-                        tmp.append(itm)
-                    to_add.append(tmp)
-
-
-
-            buy_time =f'{self.f_date.text()} {str(strftime(f"%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime(f"%Y-%m-%d %H:%M:%S", gmtime()))
-            def add_history(i):
-
-                '''date_time TEXT, product TEXT, qt INTEGER, total_price TEXT, operation TEXT, person TEXT, paid TEXT, invoice TEXT);'''
-
-                curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person, paid, invoice) values(
-                                                        "{buy_time}", 
-                                                        "{i[0]}({i[1]})", 
-                                                        "{i[3]}", 
-                                                        "{int(i[5]) * int(i[3])}", 
-                                                        "Buy",
-                                                        "{i[4]}",
-                                                        "{"No" if i[6][0].upper() == "N" else buy_time}",
-                                                        "{facture_id}")''')
-                conn.commit()
-
-                # bought.append(curs.execute('select seq from sqlite_sequence where name="history"').fetchone()[0])
-            for i in to_add:
-                curs.execute(f'''INSERT INTO products (name, code, categorie, qt, price) values("{i[0]}", "{i[1]}", "{i[2]}", {int(i[3])}, "{i[5]}")''')
-                add_history(i)
-
-            for i in to_update:
-                curs.execute(f'''
-                     UPDATE products SET qt = qt + {int(i[3])} where code like "{i[1]}"
-                ''')
-                add_history(i)
-
-            tt_qt = 0
-            for i in range(self.to_buy_table.rowCount()):
-                tt_qt += int(self.to_buy_table.item(i, 3).text())
-
-            tt_price = 0
-            for i in range(self.to_buy_table.rowCount()):
-                tt_price += int(self.to_buy_table.item(i, 5).text())
-
-
-
-            # f_dd = f'{self.f_date.text()} {str(strftime("%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-            # curs.execute(f"""insert into factures (date_time, persons, products, qt, total_price, operation) values(
-            #         "{f_dd}",
-            #         "{'-'.join(list(str(self.to_buy_table.item(i, 4).text()) for i in range(self.to_buy_table.rowCount())))}",
-            #         "{'-'.join([str(i) for i in bought])}",
-            #         {tt_qt},
-            #         "{str(tt_price)}",
-            #         "buy"
-            # )""")
-            debting = []
-
-            # for r in range(self.to_buy_table.rowCount()):
-            #     tt = []
-            #     if self.to_buy_table.item(r, 6).text()[0].upper() == 'N':
-            #         for c in range(self.to_buy_table.columnCount()):
-            #             tt.append(self.to_buy_table.item(r, c).text())
-            #     debting.append(tt)
-            #
-            # print(enumerate(debting))
-            # for i , v in enumerate(debting):#todo here we are
-
-            # curs.execute(f'''
-            #     insert into debt (date_time, person, )
-            # ''')
-            # print(debting)
-            conn.commit()
-
-            # print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
-            # self.to_buy_table.clear()
-            # self.to_buy_table.setColumnCount(len(self.table_header))
-            # self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
-
-            if self.print_facture.isChecked():
-
-                # doc = Document()
-                # doc.add_heading(STORE_NAME, 0)
-                # # f_name = f'''Facture N°: {curs.execute("select seq from sqlite_sequence where name='factures'").fetchone()[0]}, for : {f_dd.replace(' ', '_') if platform.system() == 'Linux' else f_dd.replace(':', '-').replace(' ', '_')}'''
-                # f_name = f'''Facture Id: {facture_id}, for : {buy_time}'''
-                #
-                # doc.add_heading(f_name, 1)
-                #
-                # table = doc.add_table(rows=self.to_buy_table.rowCount(), cols=self.to_buy_table.columnCount())
-                # table.allow_autofit = True
-                # table.alignment = WD_TABLE_ALIGNMENT.LEFT
-                # table.style = 'Table Grid'
-                # sections = doc.sections
-                # for section in sections:
-                #     section.top_margin = Cm(1.5)
-                #     section.bottom_margin = Cm(1.5)
-                #     section.left_margin = Cm(1.5)
-                #     section.right_margin = Cm(1.5)
-                #
-                #
-                # hdr_cells = table.rows[0].cells
-                # hdr_labels = [i for i in 'Product Categorie Quantity Seller is_Paid Total'.split(' ')]
-                #
-                # for c in range(len(hdr_labels)):
-                #     # cc = self.to_buy_table.horizontalHeaderItem(c).text()
-                #     hdr_cells[c].text = str(hdr_labels[c])
-                #
-                # rows = []
-                # table.left_margin = Cm(1.5)
-                # table.right_margin = Cm(1.5)
-                # for row in range(self.to_buy_table.rowCount()):
-                #     rr = []
-                #     for col in [0, 1, 2, 3, 4, 6, 7]:
-                #         rr.append(str(self.to_buy_table.item(row, col).text()))
-                #     rows.append(rr)
-                # # print(rows)
-                # for row in rows:
-                #     tr = table.add_row()
-                #     for idx, col in enumerate(row):
-                #         tr.cells[idx].text = col if col else '---'
-
-                qts = []
-                prices = []
-                rows = [[i.replace('_', ' ') for i in 'Product Categorie Seller is_Paid Quantity Total'.split(' ')]]
-                for row in range(self.to_buy_table.rowCount()):
-                    rr = [f'{str(self.to_buy_table.item(row, 0).text())}({str(self.to_buy_table.item(row, 1).text())})']
-                    for col in [2, 4, 6, 3, 7]:
-                        rr.append(str(self.to_buy_table.item(row, col).text()))
-                    qts.append(int(str(self.to_buy_table.item(row, 3).text())))
-                    prices.append(int(str(self.to_buy_table.item(row, 7).text()).split(' ')[0]))
-                    rows.append(rr)
-
-                rows.append([' ', ' ', ' ', ' ', sum(qts), f'{sum(prices)} DH'])
-
-                if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:#todo give it a name
-                    if not QFileInfo(filename).suffix():
-                        filename += '.pdf'
-
-                    # doc = SimpleDocTemplate(filename=filename, pagesize=letter, bottomMargin=18)
-                    # table = Table(data=rows)
-                    doc = SimpleDocTemplate(filename, pagesize=A4)  # alternatively use bottomup=False
-                    width, height = A4
-                    print(f'page width : {width}, height : {height}')
-
-
-
-
-                    table = Table(rows)
-                    style = TableStyle([
-
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
-                        ('GRID', (0, 0), (-1, -2), 1, colors.black),
-                        ('GRID', (-2, -1), (-1, -1), 1, colors.black),
-                    ])
-
-                    table.setStyle(style)
-
-
-                    styles = getSampleStyleSheet()
-                    name = Paragraph('PARA-ELECTRO', style=styles["title"])
-                    date = Paragraph(buy_time)
-                    title = Paragraph(f'<b>Invoice :</b> #{facture_id}<br/>', style=styles['Italic'])
-
-                    doc.build([name, date, title, table])
-
-                else:
-                    notification.notify(title='canceled', message='the facture file has been canceled', timeout=5)
-
-            self.print_facture.setChecked(False)
-            conn.close()
-            [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
-
-            self.product_name.setCurrentIndex(0)
-            self.categorie_.setText('')
-            self.qt_.setText('')
-            self.seller.setText('')
-            self.price.setText('')
-            self.is_paid.setChecked(True)
-            self.f_date.setText(str(strftime('%d-%M-%Y')))
-        else:
-            notification.notify(title='EROOR', message='Nothing to buy right now, please add some goods .', app_name='PARA-ELECTRO', app_icon=os.path.join(os.path.dirname(__file__), '/src/icons/logo.png'), timeout=8)
-
-    def table_select_event(self):
-        # row = [str(i.text()) for i in self.to_buy_table.selectedItems()]
-        self.clear.setEnabled(True) if [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()] else self.clear.setEnabled(False)
-        # self.selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
-        # if self.selected_rows:
-        #     self.clear.setText('Delete')
-        #     self.clear.clicked.connect(self.del_row)
-        # else:
-        #     self.clear.setText('clear')
-        #     self.clear.clicked.connect(self.clear_table)
-
-    def del_row(self):
-        selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
-        # [self.to_buy_table.removeRow(self.to_buy_table.indexAt(int(i)).row()) for i in selected_rows]
-        [self.to_buy_table.removeRow(i) for i in selected_rows]
-
-
-
-    def add_row(self):
-        if self.product_name.currentText() == '' or len(self.product_name.currentText().split( ' - ')) < 2:
-            self.err.setText('<font color="red">Invalid Product Name</font>, Hint : code - name...')
-        elif self.categorie_.text() == '':
-            self.err.setText('<font color="red">Invalid Categorie</font>')
-        elif not self.qt_.text() or int(self.qt_.text()) <= 0:
-            self.err.setText('<font color="red">Invalid Quantity Value</font>')
-        elif self.seller.text() == '':
-            self.err.setText('<font color="red">Invalid Seller Name</font>, Hint : write - if you don\'t have one')
-        elif len(str(self.price.text()).strip()) == 0 or int(self.price.text()) <= 0 :
-            self.err.setText('<font color="red">Invalid Price Value</font>')
-        else:
-            self.err.setText('')
-            # self.to_buy_table.addTableRow( [self.product_name.currentText().split(' - ')[1], self.categorie.text(), self.qt.text, self.seller.text(), self.price.text() , 'Yes' if self.paid.isChecked() else 'No'])
-            row = self.to_buy_table.rowCount()
-            self.to_buy_table.insertRow(0)
-            col = 0
-            for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(),
-                         self.seller.text(), self.price.text(), 'Yes' if self.is_paid.isChecked() else 'No', f'{int(self.qt_.text())*int(self.price.text())} DH']:
-                cell = QTableWidgetItem(str(item))
-                self.to_buy_table.setItem(0, col, cell)
-                col += 1
-
-            self.seller.setText('')
-            self.product_name.setCurrentIndex(0)
-            self.is_paid.setChecked(True)
-            self.qt_.setText('')
-
-    def qt_changing(self):
-        if self.qt_.text():
-            if self.product_name.currentText() == '':
-                self.rest.setText('<font color="red">ERR :</font> Select product first')
-                return
-
-            try:
-                # old = int(self.rest.text().split('*')[0])
-
-                self.rest.setText(f'{int(self.qt_.text())+ self.qt_value}"in the stock')
-            except:
-                self.rest.setText('<font color="red">ERR :</font> Fill the Quantity')
-            try:
-                if int(self.qt_.text()) < 1:
-                    self.rest.setText('<font color="red">ERR :</font> Must be > 0')
-                    self.add.setEnabled(False)
-                else:self.add.setEnabled(True)
-            except:pass
-        else:
-            # self.rest.setText('')
-            self.add.setEnabled(False)
-
-    def product_choosen(self):
-        conn = sqlite3.connect(DB)
-        curs = conn.cursor()
-        code = str(self.product_name.currentText()).split("-")[0].replace(" ", "")
-        # print(code)
-        try:
-            dt = curs.execute(f'select categorie, qt, price from products where code like "{code}"').fetchone()
-            self.categorie_.setText(dt[0])
-            self.categorie_.setReadOnly(True)
-            self.qt_value = int(dt[1])
-            self.rest.setText(f'{self.qt_value}"in the stock')
-
-            self.price.setText(str(dt[2]))
-
-        except:
-            self.categorie_.setText('')
-            self.categorie_.setReadOnly(False)
-            self.rest.setText('0 in the stock')
-            self.price.setText('')
-            # self.qt_.setText('1')
-            self.qt_value = 0
-
-
-    def refresh(self):
-
-        conn = sqlite3.connect(DB)
-        self.curs = conn.cursor()
-        # ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products where name like "%{self.product_name.text()}%" or code like "%{self.product_name.text()}%"').fetchall()])
-        ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products order by name asc').fetchall()])
-        ll.insert(0, '')
-        # ll = ['yassine', 'baghdadi', 'guercif']
-        try:
-            self.model.setStringList(list(set([str(i[0]).strip() for i in self.curs.execute('select person from history order by person asc').fetchall()])))
-        except Exception as e :
-            print(e)
-        self.product_name.clear()
-        self.product_name.addItems(ll)
-        conn.close()
-    # def eventFilter(self, source, event) :
-    #     # if source is self.product_name or source is self.categorie:
-    #     #     if event.type() == QtCore.QEvent.FocusIn:
-    #     #         print(f'connecting to {DB}')
-    #     #         self.conn = sqlite3.connect(DB)
-    #     #         self.curs = self.conn.cursor()
-    #     #     elif event.type() == QtCore.QEvent.FocusOut:
-    #     #         print(f'deconnecting to {DB}')
-    #     #         self.conn.close()
-    #
-    #     return super(Buy, self).eventFilter(source, event)
-
+#
+#
+#
+# class Buy(QtWidgets.QFrame):
+#     def __init__(self):
+#         super(Buy, self).__init__()
+#         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/buy.ui'), self)
+#
+#         self.product_name.installEventFilter(self)
+#
+#         self.completer = QCompleter()
+#         self.model = QStringListModel()
+#         self.completer.setModel(self.model)
+#         # # self.product_name.textChanged.connect(self.product_txt_changing)
+#         # self.product_txt_changing()
+#         self.seller.installEventFilter(self)
+#         self.seller.setCompleter(self.completer)
+#         self.product_name.currentTextChanged.connect(self.product_choosen)
+#         self.qt_.textChanged.connect(self.qt_changing)
+#         self.qt_.installEventFilter(self)
+#
+#         self.qt_.setValidator(QIntValidator())
+#         self.price.setValidator(QIntValidator())
+#         self.price.installEventFilter(self)
+#         # conn.close()
+#         self.qt_value = 0
+#         self.add.clicked.connect(self.add_row)
+#
+#         self.to_buy_table.itemSelectionChanged.connect(self.table_select_event)
+#         self.table_header = [ 'Product', 'Code', 'Categorie', 'Quantity', 'Seller', 'Price', 'Paid', 'Total']
+#         self.to_buy_table.setColumnCount(len(self.table_header))
+#         self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
+#         self.to_buy_table.resizeColumnsToContents()
+#         # self.to_buy_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+#         for i in range(len(self.table_header)):
+#             self.to_buy_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+#
+#         self.clear.setEnabled(False)
+#         self.clear.clicked.connect(self.del_row)
+#         self.buy.clicked.connect(self.save_buy)
+#         self.f_date.setText('-'.join(str(datetime.datetime.today().date()).split('-')[::-1]))
+#         [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
+#
+#         self.refresh()
+#         # with keyboard.GlobalHotKeys({
+#         #     '<ctrl>+<alt>+h': self.save_buy()}) as h:
+#         #     h.join()
+#
+#     def eventFilter(self, obj, event):
+#         if event.type() == QtCore.QEvent.KeyPress :
+#             if event.key() == QtCore.Qt.Key_Return :
+#                 if obj is self.qt_ or obj is self.seller or obj is self.price:
+#                     self.add_row()
+#
+#         return super().eventFilter(obj, event)
+#
+#     def save_buy(self):
+#         if self.to_buy_table.rowCount():
+#             # print(self.to_buy_table.rowCount())
+#             # print(self.to_buy_table.columnCount())
+#             bought = []
+#             to_update = []
+#             to_add = []
+#             conn = sqlite3.connect(DB)
+#             curs = conn.cursor()
+#             exists_codes = [str(i[0]) for i in curs.execute('select code from products').fetchall()]
+#
+#
+#             exists_invoices_ids = [str(i[0]) for i in curs.execute('SELECT invoice FROM history').fetchall()]
+#             pp = 'a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H J L M N P Q R S T U V W Y X Z 0 1 2 3 4 5 6 7 8 9'
+#             def get_facture_id() -> str:
+#                 id = ''.join(random.choices(pp.split(), k=10))
+#                 if id in exists_invoices_ids:
+#                     get_facture_id()
+#                 return id
+#             facture_id = get_facture_id()
+#             for r in range(self.to_buy_table.rowCount()):
+#                 if str(self.to_buy_table.item(r, 1).text()) in exists_codes:
+#                     tmp = []
+#                     for c in range(self.to_buy_table.columnCount()):
+#                         tmp.append(str(self.to_buy_table.item(r, c).text()))
+#                     to_update.append(tmp)
+#                 else:
+#                     tmp = []
+#                     for c in range(self.to_buy_table.columnCount()):
+#                         itm = str(self.to_buy_table.item(r, c).text())
+#                         tmp.append(itm)
+#                     to_add.append(tmp)
+#
+#
+#
+#             buy_time =f'{self.f_date.text()} {str(strftime(f"%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime(f"%Y-%m-%d %H:%M:%S", gmtime()))
+#             def add_history(i):
+#
+#                 '''date_time TEXT, product TEXT, qt INTEGER, total_price TEXT, operation TEXT, person TEXT, paid TEXT, invoice TEXT);'''
+#
+#                 curs.execute(f'''INSERT INTO history (date_time, product, qt, total_price, operation, person, paid, invoice) values(
+#                                                         "{buy_time}",
+#                                                         "{i[0]}({i[1]})",
+#                                                         "{i[3]}",
+#                                                         "{int(i[5]) * int(i[3])}",
+#                                                         "Buy",
+#                                                         "{i[4]}",
+#                                                         "{"No" if i[6][0].upper() == "N" else buy_time}",
+#                                                         "{facture_id}")''')
+#                 conn.commit()
+#
+#                 # bought.append(curs.execute('select seq from sqlite_sequence where name="history"').fetchone()[0])
+#             for i in to_add:
+#                 curs.execute(f'''INSERT INTO products (name, code, categorie, qt, price) values("{i[0]}", "{i[1]}", "{i[2]}", {int(i[3])}, "{i[5]}")''')
+#                 add_history(i)
+#
+#             for i in to_update:
+#                 curs.execute(f'''
+#                      UPDATE products SET qt = qt + {int(i[3])} where code like "{i[1]}"
+#                 ''')
+#                 add_history(i)
+#
+#             tt_qt = 0
+#             for i in range(self.to_buy_table.rowCount()):
+#                 tt_qt += int(self.to_buy_table.item(i, 3).text())
+#
+#             tt_price = 0
+#             for i in range(self.to_buy_table.rowCount()):
+#                 tt_price += int(self.to_buy_table.item(i, 5).text())
+#
+#
+#
+#             # f_dd = f'{self.f_date.text()} {str(strftime("%H:%M:%S", gmtime()))}' if self.f_date.text() else str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+#             # curs.execute(f"""insert into factures (date_time, persons, products, qt, total_price, operation) values(
+#             #         "{f_dd}",
+#             #         "{'-'.join(list(str(self.to_buy_table.item(i, 4).text()) for i in range(self.to_buy_table.rowCount())))}",
+#             #         "{'-'.join([str(i) for i in bought])}",
+#             #         {tt_qt},
+#             #         "{str(tt_price)}",
+#             #         "buy"
+#             # )""")
+#             debting = []
+#
+#             # for r in range(self.to_buy_table.rowCount()):
+#             #     tt = []
+#             #     if self.to_buy_table.item(r, 6).text()[0].upper() == 'N':
+#             #         for c in range(self.to_buy_table.columnCount()):
+#             #             tt.append(self.to_buy_table.item(r, c).text())
+#             #     debting.append(tt)
+#             #
+#             # print(enumerate(debting))
+#             # for i , v in enumerate(debting):#todo here we are
+#
+#             # curs.execute(f'''
+#             #     insert into debt (date_time, person, )
+#             # ''')
+#             # print(debting)
+#             conn.commit()
+#
+#             # print(f'rows : {self.to_buy_table.rowCount()} , Clolumns : {self.to_buy_table.columnCount()}')
+#             # self.to_buy_table.clear()
+#             # self.to_buy_table.setColumnCount(len(self.table_header))
+#             # self.to_buy_table.setHorizontalHeaderLabels(self.table_header)
+#
+#             if self.print_facture.isChecked():
+#
+#                 # doc = Document()
+#                 # doc.add_heading(STORE_NAME, 0)
+#                 # # f_name = f'''Facture N°: {curs.execute("select seq from sqlite_sequence where name='factures'").fetchone()[0]}, for : {f_dd.replace(' ', '_') if platform.system() == 'Linux' else f_dd.replace(':', '-').replace(' ', '_')}'''
+#                 # f_name = f'''Facture Id: {facture_id}, for : {buy_time}'''
+#                 #
+#                 # doc.add_heading(f_name, 1)
+#                 #
+#                 # table = doc.add_table(rows=self.to_buy_table.rowCount(), cols=self.to_buy_table.columnCount())
+#                 # table.allow_autofit = True
+#                 # table.alignment = WD_TABLE_ALIGNMENT.LEFT
+#                 # table.style = 'Table Grid'
+#                 # sections = doc.sections
+#                 # for section in sections:
+#                 #     section.top_margin = Cm(1.5)
+#                 #     section.bottom_margin = Cm(1.5)
+#                 #     section.left_margin = Cm(1.5)
+#                 #     section.right_margin = Cm(1.5)
+#                 #
+#                 #
+#                 # hdr_cells = table.rows[0].cells
+#                 # hdr_labels = [i for i in 'Product Categorie Quantity Seller is_Paid Total'.split(' ')]
+#                 #
+#                 # for c in range(len(hdr_labels)):
+#                 #     # cc = self.to_buy_table.horizontalHeaderItem(c).text()
+#                 #     hdr_cells[c].text = str(hdr_labels[c])
+#                 #
+#                 # rows = []
+#                 # table.left_margin = Cm(1.5)
+#                 # table.right_margin = Cm(1.5)
+#                 # for row in range(self.to_buy_table.rowCount()):
+#                 #     rr = []
+#                 #     for col in [0, 1, 2, 3, 4, 6, 7]:
+#                 #         rr.append(str(self.to_buy_table.item(row, col).text()))
+#                 #     rows.append(rr)
+#                 # # print(rows)
+#                 # for row in rows:
+#                 #     tr = table.add_row()
+#                 #     for idx, col in enumerate(row):
+#                 #         tr.cells[idx].text = col if col else '---'
+#
+#                 qts = []
+#                 prices = []
+#                 rows = [[i.replace('_', ' ') for i in 'Product Categorie Seller is_Paid Quantity Total'.split(' ')]]
+#                 for row in range(self.to_buy_table.rowCount()):
+#                     rr = [f'{str(self.to_buy_table.item(row, 0).text())}({str(self.to_buy_table.item(row, 1).text())})']
+#                     for col in [2, 4, 6, 3, 7]:
+#                         rr.append(str(self.to_buy_table.item(row, col).text()))
+#                     qts.append(int(str(self.to_buy_table.item(row, 3).text())))
+#                     prices.append(int(str(self.to_buy_table.item(row, 7).text()).split(' ')[0]))
+#                     rows.append(rr)
+#
+#                 rows.append([' ', ' ', ' ', ' ', sum(qts), f'{sum(prices)} DH'])
+#
+#                 if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:#todo give it a name
+#                     if not QFileInfo(filename).suffix():
+#                         filename += '.pdf'
+#
+#                     # doc = SimpleDocTemplate(filename=filename, pagesize=letter, bottomMargin=18)
+#                     # table = Table(data=rows)
+#                     doc = SimpleDocTemplate(filename, pagesize=A4)  # alternatively use bottomup=False
+#                     width, height = A4
+#                     print(f'page width : {width}, height : {height}')
+#
+#
+#
+#
+#                     table = Table(rows)
+#                     style = TableStyle([
+#
+#                         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+#                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+#                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#                         ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
+#                         ('GRID', (0, 0), (-1, -2), 1, colors.black),
+#                         ('GRID', (-2, -1), (-1, -1), 1, colors.black),
+#                     ])
+#
+#                     table.setStyle(style)
+#
+#
+#                     styles = getSampleStyleSheet()
+#                     name = Paragraph('PARA-ELECTRO', style=styles["title"])
+#                     date = Paragraph(buy_time)
+#                     title = Paragraph(f'<b>Invoice :</b> #{facture_id}<br/>', style=styles['Italic'])
+#
+#                     doc.build([name, date, title, table])
+#
+#                 else:
+#                     notification.notify(title='canceled', message='the facture file has been canceled', timeout=5)
+#
+#             self.print_facture.setChecked(False)
+#             conn.close()
+#             [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
+#
+#             self.product_name.setCurrentIndex(0)
+#             self.categorie_.setText('')
+#             self.qt_.setText('')
+#             self.seller.setText('')
+#             self.price.setText('')
+#             self.is_paid.setChecked(True)
+#             self.f_date.setText(str(strftime('%d-%M-%Y')))
+#         else:
+#             notification.notify(title='EROOR', message='Nothing to buy right now, please add some goods .', app_name='PARA-ELECTRO', app_icon=os.path.join(os.path.dirname(__file__), '/src/icons/logo.png'), timeout=8)
+#
+#     def table_select_event(self):
+#         # row = [str(i.text()) for i in self.to_buy_table.selectedItems()]
+#         self.clear.setEnabled(True) if [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()] else self.clear.setEnabled(False)
+#         # self.selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
+#         # if self.selected_rows:
+#         #     self.clear.setText('Delete')
+#         #     self.clear.clicked.connect(self.del_row)
+#         # else:
+#         #     self.clear.setText('clear')
+#         #     self.clear.clicked.connect(self.clear_table)
+#
+#     def del_row(self):
+#         selected_rows = [idx.row() for idx in self.to_buy_table.selectionModel().selectedRows()]
+#         # [self.to_buy_table.removeRow(self.to_buy_table.indexAt(int(i)).row()) for i in selected_rows]
+#         [self.to_buy_table.removeRow(i) for i in selected_rows]
+#
+#
+#
+#     def add_row(self):
+#         if self.product_name.currentText() == '' or len(self.product_name.currentText().split( ' - ')) < 2:
+#             self.err.setText('<font color="red">Invalid Product Name</font>, Hint : code - name...')
+#         elif self.categorie_.text() == '':
+#             self.err.setText('<font color="red">Invalid Categorie</font>')
+#         elif not self.qt_.text() or int(self.qt_.text()) <= 0:
+#             self.err.setText('<font color="red">Invalid Quantity Value</font>')
+#         elif self.seller.text() == '':
+#             self.err.setText('<font color="red">Invalid Seller Name</font>, Hint : write - if you don\'t have one')
+#         elif len(str(self.price.text()).strip()) == 0 or int(self.price.text()) <= 0 :
+#             self.err.setText('<font color="red">Invalid Price Value</font>')
+#         else:
+#             self.err.setText('')
+#             # self.to_buy_table.addTableRow( [self.product_name.currentText().split(' - ')[1], self.categorie.text(), self.qt.text, self.seller.text(), self.price.text() , 'Yes' if self.paid.isChecked() else 'No'])
+#             row = self.to_buy_table.rowCount()
+#             self.to_buy_table.insertRow(0)
+#             col = 0
+#             for item in [self.product_name.currentText().split(' - ')[1], self.product_name.currentText().split(' - ')[0], self.categorie_.text(), self.qt_.text(),
+#                          self.seller.text(), self.price.text(), 'Yes' if self.is_paid.isChecked() else 'No', f'{int(self.qt_.text())*int(self.price.text())} DH']:
+#                 cell = QTableWidgetItem(str(item))
+#                 self.to_buy_table.setItem(0, col, cell)
+#                 col += 1
+#
+#             self.seller.setText('')
+#             self.product_name.setCurrentIndex(0)
+#             self.is_paid.setChecked(True)
+#             self.qt_.setText('')
+#
+#     def qt_changing(self):
+#         if self.qt_.text():
+#             if self.product_name.currentText() == '':
+#                 self.rest.setText('<font color="red">ERR :</font> Select product first')
+#                 return
+#
+#             try:
+#                 # old = int(self.rest.text().split('*')[0])
+#
+#                 self.rest.setText(f'{int(self.qt_.text())+ self.qt_value}"in the stock')
+#             except:
+#                 self.rest.setText('<font color="red">ERR :</font> Fill the Quantity')
+#             try:
+#                 if int(self.qt_.text()) < 1:
+#                     self.rest.setText('<font color="red">ERR :</font> Must be > 0')
+#                     self.add.setEnabled(False)
+#                 else:self.add.setEnabled(True)
+#             except:pass
+#         else:
+#             # self.rest.setText('')
+#             self.add.setEnabled(False)
+#
+#     def product_choosen(self):
+#         conn = sqlite3.connect(DB)
+#         curs = conn.cursor()
+#         code = str(self.product_name.currentText()).split("-")[0].replace(" ", "")
+#         # print(code)
+#         try:
+#             dt = curs.execute(f'select categorie, qt, price from products where code like "{code}"').fetchone()
+#             self.categorie_.setText(dt[0])
+#             self.categorie_.setReadOnly(True)
+#             self.qt_value = int(dt[1])
+#             self.rest.setText(f'{self.qt_value}"in the stock')
+#
+#             self.price.setText(str(dt[2]))
+#
+#         except:
+#             self.categorie_.setText('')
+#             self.categorie_.setReadOnly(False)
+#             self.rest.setText('0 in the stock')
+#             self.price.setText('')
+#             # self.qt_.setText('1')
+#             self.qt_value = 0
+#
+#
+#     def refresh(self):
+#
+#         conn = sqlite3.connect(DB)
+#         self.curs = conn.cursor()
+#         # ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products where name like "%{self.product_name.text()}%" or code like "%{self.product_name.text()}%"').fetchall()])
+#         ll = list([f' - '.join(i) for i in self.curs.execute(f'select code, name from products order by name asc').fetchall()])
+#         ll.insert(0, '')
+#         # ll = ['yassine', 'baghdadi', 'guercif']
+#         try:
+#             self.model.setStringList(list(set([str(i[0]).strip() for i in self.curs.execute('select person from history order by person asc').fetchall()])))
+#         except Exception as e :
+#             print(e)
+#         self.product_name.clear()
+#         self.product_name.addItems(ll)
+#         conn.close()
+#     # def eventFilter(self, source, event) :
+#     #     # if source is self.product_name or source is self.categorie:
+#     #     #     if event.type() == QtCore.QEvent.FocusIn:
+#     #     #         print(f'connecting to {DB}')
+#     #     #         self.conn = sqlite3.connect(DB)
+#     #     #         self.curs = self.conn.cursor()
+#     #     #     elif event.type() == QtCore.QEvent.FocusOut:
+#     #     #         print(f'deconnecting to {DB}')
+#     #     #         self.conn.close()
+#     #
+#     #     return super(Buy, self).eventFilter(source, event)
+#
 
 
 

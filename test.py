@@ -441,8 +441,9 @@ for i in range(500):
     done.append(code)
 
     try:
+        pr = random.randint(50, 400)
         curs.execute(f"""
-                        INSERT INTO products (name, code, categorie, qt, price) VALUES('{prod}', '{str(code)}', '{random.choice(cats)}', '{random.randint(50, 1000)}', '{random.randint(50, 1000)}' )
+                        INSERT INTO products (name, code, categorie, qt, price, sell_price) VALUES('{prod}', '{str(code)}', '{random.choice(cats)}', '{random.randint(50, 1000)}', '{pr}', '{pr + random.randint(3, 30)}' )
                     """)
         conn.commit()
         print(f'{i}/500 : DONE')
