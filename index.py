@@ -83,7 +83,9 @@ class Main(QtWidgets.QWidget):
             person TEXT,
             paid TEXT,
             invoice TEXT,
-            operation TEXT);
+            operation TEXT,
+            rass_lmal INTEGER
+            );
         """)
         # curs.execute("""
         #     CREATE TABLE IF NOT EXISTS debt (
@@ -410,92 +412,96 @@ class Home(QtWidgets.QFrame):
     def __init__(self):
         super(Home, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/home.ui'), self)
-        con = sqlite3.connect(DB)
-        cur = con.cursor()
+
         # self.search_btn.setPixmap(QPixmap('src/icons/search.png'))
         # self.search_btn.setScaledContents(True)
         # self.search_btn.installEventFilter(self)
         self.search_txt.installEventFilter(self)
         # self.search_txt.setFixedWidth(0)
-        self.history_table.itemSelectionChanged.connect(self.table_select_event)
-        self.table_header = ['id', 'Date/Time', 'Product', 'Quantity', 'Total Price', 'Operation', 'Person']
-        self.history_table.setColumnCount(len(self.table_header))
-        self.history_table.setHorizontalHeaderLabels(self.table_header)
-        self.history_table.resizeColumnsToContents()
-        # self.history_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
-        for i in range(self.history_table.columnCount()):
-            self.history_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-
-        date = str(datetime.datetime.today().date())
-        month_sells_earn = 0
-        today_sells_earn = 0
-        today_goods_sells = []
-        month_goods_sells = []
-        cridit = 0 #from sells operations (you have to pay)
-        cridit_sells_count = 0
-        dibit = 0 #from buys operations (you have to get paid)
-        dibit_buys_count = 0
-
-        history = cur.execute('select * from history').fetchall()
-        for i in history:
-            if str(i[1]).split('-')[0] == date.split('-')[0] and str(i[1]).split('-')[1] == date.split('-')[1] and  str(i[1]).split('-')[2] == date.split('-')[2] and i[5] == 'Sell':#for this month
-                today_sells_earn += int(i[4])
-                today_goods_sells.append(str(i[2]).split('(')[1].replace(')', ''))
-
-            if str(i[1]).split('-')[1] == date.split('-')[1] and  str(i[1]).split('-')[2] == date.split('-')[2] and i[5] == 'Sell':#for this month
-                month_sells_earn += int(i[4])
-                month_goods_sells.append(str(i[2]).split('(')[1].replace(')', ''))
-
-
-        products = cur.execute('select * from products').fetchall()
-        today_rass_lmal = 0
-        month_rass_lmal = 0
-        for s in today_goods_sells:
-            for i in products:
-                if s == i[2]:
-                    today_rass_lmal += i[-1]
-        for s in month_goods_sells:
-            for i in products:
-                if s == i[2]:
-                    month_rass_lmal += i[-1]
-
-
-        month_earn = month_sells_earn - month_rass_lmal
-        today_earn = today_sells_earn - today_rass_lmal
-
-        self.counter1.setText(f'{month_earn}(<font color=green>+{today_earn}</font>)')
+        # self.history_table.itemSelectionChanged.connect(self.table_select_event)
+        # self.table_header = ['id', 'Date/Time', 'Product', 'Quantity', 'Total Price', 'Operation', 'Person']
+        # self.history_table.setColumnCount(len(self.table_header))
+        # self.history_table.setHorizontalHeaderLabels(self.table_header)
+        # self.history_table.resizeColumnsToContents()
+        # # self.history_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+        # for i in range(self.history_table.columnCount()):
+        #     self.history_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+        self.refresh()
 
 
 
-
-
-
-
-
-
-        # self.return_btn.clicked.connect(self.return_goods)
+        self.comboBox.currentTextChanged.connect(self.refresh)
 
     def refresh(self, key=None):
-        # conn = sqlite3.connect(DB)
-        # curs = conn.cursor()
-        # current_month_selld_operations = int(curs.execute('SELECT COUNT(id) FROM history where operation like "sell"').fetchone())
-        # # self.sells_operations_counter.setText(f"""
-        # #     {}
-        # # """)
-        # sql = ''
-        # if key:
-        #     sql = ''
-        # else:
-        #     pass
-        #
-        # self.history_table.clear()
-        # self.history_table.setHorizontalHeaderLabels(self.table_header)
-        pass
+        con = sqlite3.connect(DB)
+        cur = con.cursor()
+        date = str(datetime.datetime.today().date())
+
+        today_earn = 0
+        month_earn = 0
+        history = [list(i) for i in con.execute('SELECT id, date_time, product, qt, person, paid, operation, total_price, invoice, rass_lmal FROM history order by date_time asc').fetchall()]
+        for i in history:
+
+            # print(f"{str(i[1]).split('-')[0]} == {date.split('-')[2]} > {str(i[1]).split('-')[0] == date.split('-')[2]}")
+            # print(f"{str(i[1]).split('-')[1]} == {date.split('-')[1]} > {str(i[1]).split('-')[1] == date.split('-')[1]}")
+            # print(f"{str(i[1]).split('-')[2].split(' ')[0]} == {date.split('-')[0]} > {str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0]}")
+            # print(f"{i[6]} == 'sell' > {i[6] == 'sell'}")
+            # print(f"{str(i[1]).split('-')[1]} == {date.split('-')[1]} > {str(i[1]).split('-')[1] == date.split('-')[1]}")
+            # print(f"{str(i[1]).split('-')[2].split(' ')[0]} == {date.split('-')[0]} > {str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0]}")
+            # print(f"{i[6]} == 'sell' > {i[6] == 'sell'}")
+
+            if str(i[1]).split('-')[0] == date.split('-')[2] and str(i[1]).split('-')[1] == date.split('-')[1] and str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0] and i[6] == 'sell':  # for this month
+                today_earn += int(i[7])- int(i[9])#todo add some details on the tooltip
+                print(today_earn)
+
+            if str(i[1]).split('-')[1] == date.split('-')[1] and str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0] and i[6] == 'sell':  # for this month
+                month_earn += int(i[7]) - int(i[9])
+                print(month_earn)
+        print(date)
+        print(history)
+        self.counter1.setText(f'{month_earn}(<font color=green>+{today_earn}</font>)')
+        products = [list(i) for i in cur.execute('select * from products order by qt desc').fetchall()]
 
 
-    def return_goods(self):
-        # self.refresh()
-        pass
+
+        self.home_table.clear()
+        for _ in range(self.home_table.rowCount()):
+            self.home_table.removeRow(0)
+
+        if self.comboBox.currentIndex() == 0:  # for histoty table
+            head = 'Id Date Product Quantity Buyer/Seller Paid Operation Total Invoice'.split(' ')
+            self.add.setFixedWidth(0)
+            self.home_table.setColumnCount(len(head))
+            self.home_table.setHorizontalHeaderLabels(head)
+            self.home_table.resizeColumnsToContents()
+            # self.to_buy_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+            for i in range(len(head)):
+                self.home_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+            history_data = [i[:-1] for i in history]
+            for row in range(len(history_data)):
+                self.home_table.insertRow(0)
+                for col in range(len(head)):
+                    self.home_table.setItem(0, col, QTableWidgetItem(str(history_data[row][col])))
+
+        elif self.comboBox.currentIndex() == 1:
+            self.add.setFixedWidth(85)
+            products_header = [str(i[0]).replace('_', ' ').replace('qt', 'Quantity').capitalize() for i in con.execute('SELECT name FROM PRAGMA_TABLE_INFO("products");').fetchall()]
+            self.home_table.setColumnCount(len(products_header))
+            self.home_table.setHorizontalHeaderLabels(products_header)
+            self.home_table.resizeColumnsToContents()
+            # self.to_buy_table.horizontalHeader().setSectionResizeMode(self.table_header.index(self.table_header[-1]), QHeaderView.Stretch)
+            for i in range(len(products_header)):
+                self.home_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
+            for row in range(len(products)):
+                self.home_table.insertRow(0)
+                for col in range(len(products_header)):
+                    self.home_table.setItem(0, col, QTableWidgetItem(str(products[row][col])))
+
+
+
+
+        con.close()
 
 
     def table_select_event(self):
@@ -628,15 +634,16 @@ class Sell(QtWidgets.QFrame):
                                     UPDATE products SET qt = qt - {int(row[3])} where code like "{row[1]}"
                                     ''')
                 curs.execute(
-                    f'''INSERT INTO history (date_time, product, qt, total_price, person, paid, invoice, operation) values(
+                    f'''INSERT INTO history (date_time, product, qt, total_price, person, paid, invoice, operation, rass_lmal) values(
                                                                         "{buy_time}", 
                                                                         "{row[0]}({row[1]})", 
                                                                         "{row[3]}", 
-                                                                        "{int(str(row[7]).split(' ')[0]) * int(row[3])}",
-                                                                        "{row[5]}",
+                                                                        "{row[-1].split(' ')[0]}",
+                                                                        "{row[4]}",
                                                                         "{"No" if row[7][0].upper() == "N" else buy_time}",
                                                                         "{facture_id}",
-                                                                        "sell"
+                                                                        "sell",
+                                                                        {int(curs.execute(f'select price from products where code like "{row[1]}"').fetchone()[0]) * int(row[3])}
                                                                         )''')
                 conn.commit()
 
@@ -840,7 +847,7 @@ class Sell(QtWidgets.QFrame):
         conn = sqlite3.connect(DB)
         curs = conn.cursor()
         code = str(self.product_name.currentText()).split("-")[0].replace(" ", "")
-        dt = curs.execute(f'select categorie, qt, sell_price from products where code like "{code}"').fetchone()
+        dt = curs.execute(f'select categorie, qt, sell_price, price from products where code like "{code}"').fetchone()
         if dt:
             self.categorie_.setText(dt[0])
             self.categorie_.setReadOnly(True)
@@ -857,6 +864,7 @@ class Sell(QtWidgets.QFrame):
             # self.qt_.setText('1')
             self.qt_value = 0
             # self.price.setReadOnly(False)
+
 
         conn.close()
 
