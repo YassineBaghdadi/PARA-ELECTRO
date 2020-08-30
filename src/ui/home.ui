@@ -71,6 +71,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="counter1">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -105,6 +108,9 @@
           </item>
           <item>
            <widget class="QLabel" name="counter2">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -130,6 +136,9 @@
           </item>
           <item>
            <widget class="QLabel" name="counter3">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
@@ -155,6 +164,9 @@
           </item>
           <item>
            <widget class="QLabel" name="counter4">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>

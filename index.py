@@ -87,6 +87,13 @@ class Main(QtWidgets.QWidget):
             rass_lmal INTEGER
             );
         """)
+        curs.execute("""
+            CREATE TABLE IF NOT EXISTS wishlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            name TEXT, 
+            note TEXT
+            );
+        """)
         # curs.execute("""
         #     CREATE TABLE IF NOT EXISTS debt (
         #     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -429,16 +436,52 @@ class Home(QtWidgets.QFrame):
         self.refresh()
 
 
-
         self.comboBox.currentTextChanged.connect(self.refresh)
+        self.search_txt.textChanged.connect(self.searching)
 
-    def refresh(self, key=None):
+    def searching(self):
+        if self.search_txt.text():
+            [self.home_table.removeRow(0) for i in range(self.home_table.rowCount())]
+            con = sqlite3.connect(DB)
+            key = self.search_txt.text()
+            data = []
+            if self.comboBox.currentIndex() == 0:
+                data = [[c for c in row] for row in con.execute(f'select id, date_time, product, qt, person, paid, operation, total_price, invoice from history where date_time like "%{key}%" or product like "%{key}%" or person like "%{key}%" or invoice like "%{key}%" or operation like "%{key}%"').fetchall()]
+
+            elif self.comboBox.currentIndex() == 1:
+                data = [[c for c in row] for row in con.execute(f'select * from products where name like "%{key}%" or code like "%{key}%" or categorie like "%{key}%"').fetchall()]
+
+            if data:
+                for r in data:
+                    self.home_table.insertRow(0)
+                    for c in range(len(r)):
+                        self.home_table.setItem(0, c, QTableWidgetItem(str(r[c])))
+            else:
+                [self.home_table.removeRow(0) for i in range(self.home_table.rowCount())]
+
+
+
+        else:
+            self.refresh()
+
+    def refresh(self):
         con = sqlite3.connect(DB)
         cur = con.cursor()
         date = str(datetime.datetime.today().date())
 
         today_earn = 0
         month_earn = 0
+        total_item_bought_counter = 0
+        today_item_bought_counter = 0
+        month_item_bought_counter = 0
+        total_selling = 0
+        month_selling = 0
+        today_selling = 0
+        total_earning = 0
+        mount_client_have_to_pay = 0
+        clients_gotta_pay = ['lkridi li katssal\n']
+        mount_u_have_to_pay = 0
+        suppliers_gotta_get_paid = ['lkridi li 3liiik \n']
         history = [list(i) for i in con.execute('SELECT id, date_time, product, qt, person, paid, operation, total_price, invoice, rass_lmal FROM history order by date_time asc').fetchall()]
         for i in history:
 
@@ -450,16 +493,53 @@ class Home(QtWidgets.QFrame):
             # print(f"{str(i[1]).split('-')[2].split(' ')[0]} == {date.split('-')[0]} > {str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0]}")
             # print(f"{i[6]} == 'sell' > {i[6] == 'sell'}")
 
-            if str(i[1]).split('-')[0] == date.split('-')[2] and str(i[1]).split('-')[1] == date.split('-')[1] and str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0] and i[6] == 'sell':  # for this month
-                today_earn += int(i[7])- int(i[9])#todo add some details on the tooltip
-                print(today_earn)
+            if str(i[1]).split('-')[0] == date.split('-')[2] and str(i[1]).split('-')[1] == date.split('-')[1] and str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0] and i[6] == 'sell':  # for today
+                today_earn += int(i[7]) - int(i[9])
+                today_selling += int(i[7])
+                today_item_bought_counter += int(i[3])
 
             if str(i[1]).split('-')[1] == date.split('-')[1] and str(i[1]).split('-')[2].split(' ')[0] == date.split('-')[0] and i[6] == 'sell':  # for this month
                 month_earn += int(i[7]) - int(i[9])
-                print(month_earn)
-        print(date)
-        print(history)
-        self.counter1.setText(f'{month_earn}(<font color=green>+{today_earn}</font>)')
+                month_selling += int(i[7])
+                month_item_bought_counter += int(i[3])
+
+            if i[6] == 'sell':
+                total_earning += int(i[7]) - int(i[9])
+                total_selling += int(i[7])
+                total_item_bought_counter += int(i[3])
+                if str(i[5]).lower() == 'no':
+                    mount_client_have_to_pay += int(i[7])
+                    clients_gotta_pay.append(f'''+ {i[4]} : {i[7]}DH\n     - Product : {i[2]}\n     - Operation Id : {i[0]}\n''')
+            else:
+                if str(i[5]).lower() == 'no':
+                    mount_u_have_to_pay += int(i[7])
+                    suppliers_gotta_get_paid.append(f'''+ {i[4]} : {i[7]}DH\n     - Product : {i[2]}\n     - Operation Id : {i[0]}\n''')
+
+
+        self.counter1.setText(f'{round(month_earn/2, 2)}(<font color=green>+{round(today_earn/2, 1)}</font>) DH')
+        self.counter1.setToolTip(f'''
+            #######  Earning #######\n
+            + Total Earning : {total_earning}DH from {total_selling} DH\n
+                - this Month : {month_earn}DH from {month_selling} DH\n
+                - Today : {today_earn}DH from {today_selling} DH\n
+            + Total Sold items : {total_item_bought_counter}\n
+                - this Month : {month_item_bought_counter}\n
+                - Today : {today_item_bought_counter}
+        ''')
+        self.counter2.setText(f'<font color=green>{mount_client_have_to_pay} DH</font>')
+        self.counter2.setToolTip(f'''{"".join(clients_gotta_pay)}''')
+
+        self.counter3.setText(f'<font color=green>{mount_u_have_to_pay} DH</font>')
+        self.counter3.setToolTip(f'''{"".join(suppliers_gotta_get_paid)}''')
+
+        producs_out_of_stock = [f' + {i[0]}({i[1]})' for i in cur.execute('select name, code from products where qt = 0').fetchall()]
+        self.counter4.setText(str(len(producs_out_of_stock)))
+        producs_out_of_stock.insert(0, 'Products Out Of Stock')
+        self.counter4.setToolTip('\n'.join(producs_out_of_stock))
+        wish_list = [f'  + {i[0]} ({i[1]})' for i in cur.execute('select name, note from wishlist order by id desc')]
+        self.counter5.setText(str(len(wish_list)))
+        wish_list.insert(0, 'Products to Buy : ')
+        self.counter5.setToolTip('\n'.join(wish_list))
         products = [list(i) for i in cur.execute('select * from products order by qt desc').fetchall()]
 
 
@@ -469,6 +549,7 @@ class Home(QtWidgets.QFrame):
             self.home_table.removeRow(0)
 
         if self.comboBox.currentIndex() == 0:  # for histoty table
+            self.search_txt.setEnabled(True)
             head = 'Id Date Product Quantity Buyer/Seller Paid Operation Total Invoice'.split(' ')
             self.add.setFixedWidth(0)
             self.home_table.setColumnCount(len(head))
@@ -484,6 +565,7 @@ class Home(QtWidgets.QFrame):
                     self.home_table.setItem(0, col, QTableWidgetItem(str(history_data[row][col])))
 
         elif self.comboBox.currentIndex() == 1:
+            self.search_txt.setEnabled(True)
             self.add.setFixedWidth(85)
             products_header = [str(i[0]).replace('_', ' ').replace('qt', 'Quantity').capitalize() for i in con.execute('SELECT name FROM PRAGMA_TABLE_INFO("products");').fetchall()]
             self.home_table.setColumnCount(len(products_header))
@@ -497,10 +579,17 @@ class Home(QtWidgets.QFrame):
                 self.home_table.insertRow(0)
                 for col in range(len(products_header)):
                     self.home_table.setItem(0, col, QTableWidgetItem(str(products[row][col])))
-
-
-
-
+        else:
+            self.search_txt.setEnabled(False)
+        # ll = []
+        # for r in range(self.home_table.rowCount()):
+        #     row = []
+        #     for c in range(self.home_table.columnCount()):
+        #         row.append(self.home_table.item(r, c).text())
+        #     ll.append(row)
+        # # self.table_content.reverse()
+        # self.table_content = pd.DataFrame(ll, columns=range(len(ll[0][0])))
+        # self.table_content.reset_index(drop=True, inplace=True)
         con.close()
 
 
@@ -640,7 +729,7 @@ class Sell(QtWidgets.QFrame):
                                                                         "{row[3]}", 
                                                                         "{row[-1].split(' ')[0]}",
                                                                         "{row[4]}",
-                                                                        "{"No" if row[7][0].upper() == "N" else buy_time}",
+                                                                        "{"No" if row[6][0].upper() == "N" else buy_time}",
                                                                         "{facture_id}",
                                                                         "sell",
                                                                         {int(curs.execute(f'select price from products where code like "{row[1]}"').fetchone()[0]) * int(row[3])}
@@ -686,7 +775,7 @@ class Sell(QtWidgets.QFrame):
 
                 # rows.append([' ', ' ', ' ', ' ', sum(qts), f'{sum(prices)} DH'])
 
-                if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:#todo give it a name
+                if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:
                     if not QFileInfo(filename).suffix():
                         filename += '.pdf'
 
@@ -1047,7 +1136,7 @@ class Sell(QtWidgets.QFrame):
 #             #     debting.append(tt)
 #             #
 #             # print(enumerate(debting))
-#             # for i , v in enumerate(debting):#todo here we are
+#             # for i , v in enumerate(debting):
 #
 #             # curs.execute(f'''
 #             #     insert into debt (date_time, person, )
@@ -1115,7 +1204,7 @@ class Sell(QtWidgets.QFrame):
 #
 #                 rows.append([' ', ' ', ' ', ' ', sum(qts), f'{sum(prices)} DH'])
 #
-#                 if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:#todo give it a name
+#                 if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:
 #                     if not QFileInfo(filename).suffix():
 #                         filename += '.pdf'
 #
