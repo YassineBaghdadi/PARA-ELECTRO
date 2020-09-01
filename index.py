@@ -415,6 +415,111 @@ class Main(QtWidgets.QWidget):
     #         print(text)
 
 
+class Product_info(QtWidgets.QFrame):
+    def __init__(self, row = None):
+        super(Product_info, self).__init__()
+        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/product_info.ui'), self)
+        self.data = row
+        self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        self.cancel.clicked.connect(lambda x: self.close())
+        self.refresh()
+        self.code.textChanged.connect(self.code_change)
+        self.save.clicked.connect(self.save_info)
+        self.code.setValidator(QIntValidator())
+        self.qt.setValidator(QIntValidator())
+        self.price.setValidator(QIntValidator())
+        self.sell_price.setValidator(QIntValidator())
+
+
+
+    def refresh(self):
+        con = sqlite3.connect(DB)
+        self.codes = [i[0] for i in con.execute('select code from products').fetchall()]
+        if self.data:
+            row = [i for i in con.execute(f'select code, name, categorie, qt, price, sell_price from products where id = {int(self.data[0])}').fetchone()]
+            print(row)
+            self.code.setEnabled(False)
+            self.code.setText(row[0])
+            self.name.setText(row[1])
+            self.cate.setText(row[2])
+            self.qt.setText(str(row[3]))
+            self.price.setText(str(row[4]))
+            self.sell_price.setText(str(row[5]))
+            self.buyer.setEnabled(False)
+            self.is_paid.setEnabled(False)
+            if self.data[1] == 0 or self.data[1] == 1 or self.data[1] == 2:
+                self.name.setFocus()
+            elif self.data[1] == 3:
+                self.cate.setFocus()
+            elif self.data[1] == 4:
+                self.qt.setFocus()
+            elif self.data[1] == 5:
+                self.price.setFocus()
+            elif self.data[1] == 6:
+                self.sell_price.setFocus()
+        else:
+            self.code.setEnabled(True)
+            self.code.setText('')
+            self.name.setText('')
+            self.cate.setText('')
+            self.qt.setText('')
+            self.price.setText('')
+            self.sell_price.setText('')
+            self.buyer.setText('')
+            self.buyer.setEnabled(True)
+            self.is_paid.setEnabled(True)
+        con.close()
+
+    def code_change(self):
+        if self.code.text() in self.codes:
+            self.save.setEnabled(False)
+        else:
+            self.save.setEnabled(True)
+
+    def save_info(self):
+        if self.code.text() and self.name.text() and self.cate.text() and self.qt.text() and self.price.text() and self.sell_price.text():
+
+            con = sqlite3.connect(DB)
+            # mount_bought =
+            buy_time = str(strftime(f"%d-%m-%Y %H:%M:%S", gmtime()))
+
+            if self.code.text() in self.codes:
+                con.execute(f'''UPDATE products set 
+                    name = "{self.name.text()}",
+                    categorie = "{self.cate.text()}",
+                    qt = {int(self.qt.text())},
+                    price = "{self.price.text()}",
+                    sell_price = "{self.sell_price.text()}"
+                    
+                ''')
+            else:
+                con.execute(f'''insert into products (name, code, categorie, qt, price, sell_price) values (
+                    "{self.name.text()}",
+                    "{self.code.text()}",
+                    "{self.cate.text()}",
+                    {int(self.qt.text())},
+                    "{self.price.text()}",
+                    "{self.sell_price.text()}"
+                )''')
+                con.execute( f'''insert into history (date_time, product, qt, total_price, person, paid, invoice, operation, rass_lmal) values (
+                    "{buy_time}",
+                    "{f'{self.name.text()}({self.code.text()})'}",
+                    {int(self.qt.text())},
+                    "{int(self.price.text()) * int(self.qt.text())}",
+                    "{self.buyer.text()}",
+                    "{'No' if not self.is_paid.isChecked() else buy_time}",
+                    "-",
+                    "buy",
+                    {int(self.price.text())}
+                    
+                    )''' )
+            con.commit()
+            con.close()
+            notification.notify(title="Operation saved", message=f"you are just bought {self.qt.text()} of {self.name.text()} for {self.price.text()} DH per unit.")
+            self.refresh()
+        else:
+            notification.notify(title="ERROR", message="there is no valid information to save")
+
 class Home(QtWidgets.QFrame):
     def __init__(self):
         super(Home, self).__init__()
@@ -438,6 +543,27 @@ class Home(QtWidgets.QFrame):
 
         self.comboBox.currentTextChanged.connect(self.refresh)
         self.search_txt.textChanged.connect(self.searching)
+        self.add.clicked.connect(self.add_product)
+        self.home_table.viewport().installEventFilter(self)
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.MouseButtonDblClick and
+                source is self.home_table.viewport()):
+            item = self.home_table.itemAt(event.pos())
+            if item is not None:
+                print('dblclick:', item.row(), item.column())
+                if self.comboBox.currentIndex() == 1:
+                    row = [self.home_table.item(item.row(), c).text() for c in range(self.home_table.columnCount())]
+                    print(row)
+                    self.prod_inf = Product_info([self.home_table.item(item.row(), 0).text(), item.column()])
+                    self.prod_inf.show()
+                elif self.comboBox.currentIndex() == 0:
+                    self.search_txt.setText(self.home_table.item(item.row(), item.column()).text())
+        return super(Home, self).eventFilter(source, event)
+
+    def add_product(self):
+        self.p_info = Product_info()
+        self.p_info.show()
 
     def searching(self):
         if self.search_txt.text():
@@ -465,6 +591,7 @@ class Home(QtWidgets.QFrame):
             self.refresh()
 
     def refresh(self):
+        self.search_txt.setText('')
         con = sqlite3.connect(DB)
         cur = con.cursor()
         date = str(datetime.datetime.today().date())
@@ -482,7 +609,7 @@ class Home(QtWidgets.QFrame):
         clients_gotta_pay = ['lkridi li katssal\n']
         mount_u_have_to_pay = 0
         suppliers_gotta_get_paid = ['lkridi li 3liiik \n']
-        history = [list(i) for i in con.execute('SELECT id, date_time, product, qt, person, paid, operation, total_price, invoice, rass_lmal FROM history order by date_time asc').fetchall()]
+        history = [list(i) for i in con.execute('SELECT id, date_time, product, qt, person, paid, operation, total_price, invoice, rass_lmal FROM history order by id asc').fetchall()]
         for i in history:
 
             # print(f"{str(i[1]).split('-')[0]} == {date.split('-')[2]} > {str(i[1]).split('-')[0] == date.split('-')[2]}")
