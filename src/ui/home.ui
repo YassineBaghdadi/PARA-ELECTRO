@@ -278,11 +278,6 @@
                 <string>Products</string>
                </property>
               </item>
-              <item>
-               <property name="text">
-                <string>Invoices</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>

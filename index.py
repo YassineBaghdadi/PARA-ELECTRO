@@ -363,6 +363,8 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.debt_frame):
             self.dept = Debt()
             self.dept.show()
+        elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.statistics_frame):
+            self.change_widget(Statics())
 
 
 
@@ -413,6 +415,9 @@ class Main(QtWidgets.QWidget):
     #     text, ok = QInputDialog.getText(self, 'Money Operations', 'Enter the Amount :')
     #     if ok:
     #         print(text)
+
+
+
 
 
 class Product_info(QtWidgets.QFrame):
@@ -1509,6 +1514,26 @@ class Debt(QtWidgets.QDialog):
     def __init__(self):
         super(Debt, self).__init__()
         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/debt.ui'), self)
+
+
+
+class Statics(QtWidgets.QFrame):
+    def __init__(self, q = None):
+        super(Statics, self).__init__()
+        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/statics.ui'), self)
+
+
+        con = sqlite3.connect(DB)
+        self.history = [i for i in con.execute('select * from history ').fetchall()]
+
+        con.close()
+        self.total_earn = [i[4] for i in self.history if str(i[9]).lower() == 'sell']
+        self.daily_earn = []
+        self.daily_days = []
+        for i in self.history:
+            if str(i[9]).lower() == 'sell':
+
+
 
 
 
