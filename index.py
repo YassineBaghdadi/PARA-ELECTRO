@@ -13,10 +13,11 @@ from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QHeaderView, QM
 from PyQt5.QtGui import QIcon, QPixmap, QIntValidator
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from time import gmtime, strftime
-from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.shared import Inches, Cm
-
+# from docx import Document
+# from docx.enum.table import WD_TABLE_ALIGNMENT
+# from docx.shared import Inches, Cm
+from win10toast import ToastNotifier
+notif = ToastNotifier()
 from plyer import notification
 
 # main_ui, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "src/ui/main.ui"))
@@ -30,7 +31,7 @@ from plyer import notification
 #         self.setupUi(self)
 #         self.menu_icon.setPixmap(QPixmap('src/icons/menu.png'))
 #         self.menu_icon.setScaledContents(True)
-from pynput import keyboard
+# from pynput import keyboard
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, A4, A5
 from reportlab.lib.styles import getSampleStyleSheet
@@ -363,8 +364,8 @@ class Main(QtWidgets.QWidget):
         elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.debt_frame):
             self.dept = Debt()
             self.dept.show()
-        elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.statistics_frame):
-            self.change_widget(Statics())
+        # elif (event.type() == QtCore.QEvent.MouseButtonPress and source is self.statistics_frame):
+        #     self.change_widget(Statics())
 
 
 
@@ -427,6 +428,14 @@ class Product_info(QtWidgets.QFrame):
         self.data = row
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.cancel.clicked.connect(lambda x: self.close())
+        self.completer = QCompleter()
+        self.completer1 = QCompleter()
+        self.model = QStringListModel()
+        self.model1 = QStringListModel()
+        self.completer.setModel(self.model)
+        self.completer1.setModel(self.model1)
+        self.cate.setCompleter(self.completer)
+        self.buyer.setCompleter(self.completer1)
         self.refresh()
         self.code.textChanged.connect(self.code_change)
         self.save.clicked.connect(self.save_info)
@@ -440,6 +449,10 @@ class Product_info(QtWidgets.QFrame):
     def refresh(self):
         con = sqlite3.connect(DB)
         self.codes = [i[0] for i in con.execute('select code from products').fetchall()]
+        self.model1.setStringList(list(set([str(i[0]).strip() for i in con.execute(
+            'select person from history order by person asc').fetchall()])))
+        self.model.setStringList(list(set([str(i[0]).strip() for i in con.execute(
+            'select categorie from products order by categorie asc').fetchall()])))
         if self.data:
             row = [i for i in con.execute(f'select code, name, categorie, qt, price, sell_price from products where id = {int(self.data[0])}').fetchone()]
             print(row)
@@ -483,6 +496,16 @@ class Product_info(QtWidgets.QFrame):
 
     def save_info(self):
         if self.code.text() and self.name.text() and self.cate.text() and self.qt.text() and self.price.text() and self.sell_price.text():
+            if int(self.price.text()) >= int(self.sell_price.text()):
+                notif_ = ["Error",
+                          f"the price of sell({self.sell_price.text()}DH in this case) must be greater than the original price({self.price.text()}DH in this case) to get some benefit"]
+                if platform.system() == 'Windows':
+                    notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                     icon_path='logo.ico', threaded=True)
+                else:
+                    notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                        app_icon='logo.ico')
+                return
 
             con = sqlite3.connect(DB)
             # mount_bought =
@@ -520,10 +543,22 @@ class Product_info(QtWidgets.QFrame):
                     )''' )
             con.commit()
             con.close()
-            notification.notify(title="Operation saved", message=f"you are just bought {self.qt.text()} of {self.name.text()} for {self.price.text()} DH per unit.")
+            notif_ = ["Operation saved", f"you are just bought {self.qt.text()} of {self.name.text()} for {self.price.text()} DH per unit."]
+            if platform.system() == 'Windows':
+                notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                 icon_path='logo.ico', threaded=True)
+            else:
+                notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                    app_icon='logo.ico')
             self.refresh()
         else:
-            notification.notify(title="ERROR", message="there is no valid information to save")
+            notif_ = ["ERROR", "there is no valid information to save"]
+            if platform.system() == 'Windows':
+                notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                 icon_path='logo.ico', threaded=True)
+            else:
+                notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                    app_icon='logo.ico')
 
 class Home(QtWidgets.QFrame):
     def __init__(self):
@@ -785,6 +820,7 @@ class Sell(QtWidgets.QFrame):
         self.clear.setEnabled(False)
         self.clear.clicked.connect(self.del_row)
         self.buy.clicked.connect(self.save)
+        self.buy.setText('Sell')
         self.f_date.setText('-'.join(str(datetime.datetime.today().date()).split('-')[::-1]))
         [self.to_buy_table.removeRow(0) for _ in range(self.to_buy_table.rowCount())]
 
@@ -797,16 +833,14 @@ class Sell(QtWidgets.QFrame):
         self.categorie_.setReadOnly(True)
 
         self.qt_bought = {}
+        self.is_paid.stateChanged.connect(self.is_paid_changed)
+        self.origin_price = 0
 
-
-
-    # def change_operation_type(self):
-    #     if self.operation_type.isChecked():
-    #         self.categorie_.setReadOnly(False)
-    #         self.seller.setPlaceholderText('Seller Name *')
-    #     else:
-    #         self.categorie_.setReadOnly(True)
-    #         self.seller.setPlaceholderText('Buyer Name (Optional)')
+    def is_paid_changed(self):
+        if self.is_paid.isChecked():
+            self.seller.setPlaceholderText('Buyer Name(Optional)')
+        else:
+            self.seller.setPlaceholderText('Buyer Name*')
 
 
     def eventFilter(self, obj, event):
@@ -906,8 +940,9 @@ class Sell(QtWidgets.QFrame):
                 #     rows.append(rr)
 
                 # rows.append([' ', ' ', ' ', ' ', sum(qts), f'{sum(prices)} DH'])
-
-                if filename := QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )", directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]:
+                filename = QtWidgets.QFileDialog.getSaveFileName(caption='Print Facture', filter="PDF (*.pdf )",
+                                                      directory=os.path.join(DESKTOP, f'invoice_{facture_id}'))[0]
+                if filename :
                     if not QFileInfo(filename).suffix():
                         filename += '.pdf'
 
@@ -943,10 +978,23 @@ class Sell(QtWidgets.QFrame):
 
 
                     doc.build(elems)
-                    notification.notify(title='Invoice Saved Successfully', message=f'The Invoice File (pdf file) saved at {filename}', timeout=5)
+
+                    notif_ = ['Invoice Saved Successfully', f'The Invoice File (pdf file) saved at {filename}']
+                    if platform.system() == 'Windows':
+                        notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                         icon_path= 'logo.ico', threaded=True)
+                    else:
+                        notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                            app_icon='logo.ico')
 
                 else:
-                    notification.notify(title='canceled', message='the facture file has been canceled', timeout=5)
+                    notif_ = ['canceled', 'the facture file has been canceled']
+                    if platform.system() == 'Windows':
+                        notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                         icon_path= 'logo.ico', threaded=True)
+                    else:
+                        notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                            app_icon='logo.ico')
 
             self.print_facture.setChecked(False)
             # self.operation_type.setChecked(False)
@@ -961,7 +1009,11 @@ class Sell(QtWidgets.QFrame):
             self.is_paid.setChecked(True)
             self.f_date.setText(str(strftime('%d-%M-%Y')))
         else:
-            notification.notify(title='EROOR', message='Nothing to buy right now, please add some goods .', app_name='PARA-ELECTRO', app_icon=os.path.join(os.path.dirname(__file__), '/src/icons/logo.png'), timeout=8)
+            notif_ = ['EROOR', 'Nothing to buy right now, please add some goods .']
+            if platform.system() == 'Windows':
+                notif.show_toast(title=notif_[0], msg=notif_[1], duration=8, icon_path='logo.ico', threaded=True)
+            else:
+                notification.notify(title=notif_[0], message=notif_[1], timeout=8, app_icon='logo.ico')
 
     def table_select_event(self):
         # row = [str(i.text()) for i in self.to_buy_table.selectedItems()]
@@ -991,13 +1043,23 @@ class Sell(QtWidgets.QFrame):
             self.err.setText('<font color="red">Invalid Quantity Value</font>')
         elif len(str(self.price.text()).strip()) == 0 or int(self.price.text()) <= 0 :
             self.err.setText('<font color="red">Invalid Price Value</font>')
+        elif not self.is_paid.isChecked() and self.seller.text() == '':
+            self.err.setText('<font color="red">When the buyer not paid you should fill the buyer name field</font>')
+        elif self.origin_price and int(self.origin_price) >= int(self.price.text()):
+            self.err.setText(f'<font color="red">The Price Must be Greater than the original price({self.origin_price}DH in this case)</font>')
 
         else:
             if self.seller.text() == '':
                 self.seller.setText('-')
 
             if self.product_name.currentText() and self.product_name.currentText().split( ' - ')[0].strip() not in self.all_codes:
-                notification.notify(title='error', message='it\'s seems you have no such product with this infos')
+                notif_ = ['error', 'it\'s seems you have no such product with this infos']
+                if platform.system() == 'Windows':
+                    notif.show_toast(title=notif_[0], msg=notif_[1], duration=8,
+                                     icon_path='logo.ico', threaded=True)
+                else:
+                    notification.notify(title=notif_[0], message=notif_[1], timeout=8,
+                                        app_icon='logo.ico')
                 return
 
 
@@ -1077,6 +1139,7 @@ class Sell(QtWidgets.QFrame):
 
             self.price.setText(str(dt[2]))
             # self.price.setReadOnly(True)
+            self.origin_price = dt[3]
         else:
             self.categorie_.setText('')
             self.categorie_.setReadOnly(False)
@@ -1517,21 +1580,21 @@ class Debt(QtWidgets.QDialog):
 
 
 
-class Statics(QtWidgets.QFrame):
-    def __init__(self, q = None):
-        super(Statics, self).__init__()
-        uic.loadUi(os.path.join(os.getcwd(), 'src/ui/statics.ui'), self)
-
-
-        con = sqlite3.connect(DB)
-        self.history = [i for i in con.execute('select * from history ').fetchall()]
-
-        con.close()
-        self.total_earn = [i[4] for i in self.history if str(i[9]).lower() == 'sell']
-        self.daily_earn = []
-        self.daily_days = []
-        for i in self.history:
-            if str(i[9]).lower() == 'sell':
+# class Statics(QtWidgets.QFrame):
+#     def __init__(self, q = None):
+#         super(Statics, self).__init__()
+#         uic.loadUi(os.path.join(os.getcwd(), 'src/ui/statics.ui'), self)
+#
+#
+#         con = sqlite3.connect(DB)
+#         self.history = [i for i in con.execute('select * from history ').fetchall()]
+#
+#         con.close()
+#         self.total_earn = [i[4] for i in self.history if str(i[9]).lower() == 'sell']
+#         self.daily_earn = []
+#         self.daily_days = []
+#         for i in self.history:
+#             if str(i[9]).lower() == 'sell':
 
 
 
